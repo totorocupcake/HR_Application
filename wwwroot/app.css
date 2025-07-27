@@ -49,3 +49,56 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+/* SET GLOBAL TABLE VARIABLES */
+:root {
+    /* Cell padding (top/bottom, left/right) */
+    --mud-table-cell-padding: 0px 0px;
+    --mud-table-header-cell-padding: 0px 0px;
+    --mud-table-dense-cell-padding: 0px 0px;
+    --mud-table-dense-header-cell-padding: 0px 0px;
+    /* Font sizes */
+    --mud-table-cell-font-size: 0.75rem;
+    --mud-table-header-font-size: 0.8rem;
+    /* Min heights */
+    --mud-table-header-min-height: 24px;
+    --mud-table-toolbar-min-height: 32px;
+    --mud-table-pagination-min-height: 32px;
+}
+
+/* EXTRA OVERRIDES FOR OLDER BROWSERS */
+.mud-table-cell,
+.mud-table-header {
+    padding: 0px 0px !important;
+    font-size: 0.75rem !important;
+}
+
+.mud-table-header {
+    min-height: 24px !important;
+    padding: 3px 4px !important;
+}
+
+/* CRITICAL: Prevent container expansion */
+.mud-table-container {
+    min-height: 0 !important;
+}
+
+/* COMPACT TOOLBAR & PAGINATION */
+.mud-table-toolbar {
+    min-height: 32px !important;
+    padding: 4px 8px !important;
+}
+
+.mud-table-pagination {
+    min-height: 32px !important;
+    padding: 4px 8px !important;
+}
+
+/* COMPACT INPUTS IN EDIT MODE */
+.mud-table .mud-input-root {
+    font-size: 0.75rem !important;
+    min-height: 24px !important;
+}
+
+.mud-table .mud-input-input {
+    padding: 0px 0px !important;
+}

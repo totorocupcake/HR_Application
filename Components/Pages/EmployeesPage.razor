@@ -1,4 +1,4 @@
-﻿@page "/helloedit"
+﻿@page "/Employees"
 
 @using System.Net.Http.Json
 @using HR_Application.Models
@@ -7,48 +7,53 @@
 @inject OracleDataService OracleDataService
 @inject ISnackbar Snackbar
 
-<h3>HelloEdit</h3>
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-<MudTable Items="@Employees" Dense="true" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" Striped = "true"
-          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" 
-          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="@blockSwitch" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
+<h3></h3>
+<div style=" display: flex; flex-direction: column;">
+    <MudTable @ref="tableRef" Class="compact-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
+              @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc" Filterable="true"
+          RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Header Text</MudText>
+        <MudText Typo="Typo.h6">View / Edit Employees</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <ColGroup>
-        @if (applyButtonPosition.DisplayApplyButtonAtStart() || (editButtonPosition.DisplayEditButtonAtStart() && editTrigger == TableEditTrigger.EditButton))
-        {
-            <col style="width:50px;" />
-        }
-        <col style="width:50px;" />
-        <col style="width:80px;" />
-        <col style="width:50%;" />
-        <col />
-        <col />
+        <col style="width:40px;" />
+        <col style="width:40px;" />
+        <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
         @if (applyButtonPosition.DisplayApplyButtonAtEnd() || (editButtonPosition.DisplayEditButtonAtEnd() && editTrigger == TableEditTrigger.EditButton))
         {
             <col style="width:50px;" />
         }
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Id)">Employee ID</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.FirstName)">FirstName</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Employee, object>(x => x.LastName)">LastName</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.PhoneNumber)">PhoneNumber</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.HireDate)">HireDate</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.JobId)">JobId</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Salary)">Salary</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.CommissionPct)">CommissionPct</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.ManagerId)">ManagerId</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.DepartmentId)">DepartmentId</MudTableSortLabel></MudTh>
-        <MudTh>Delete?</MudTh>
+        
+            <MudTh Style="width: 40px;"><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Id)" Class="compact-sort-label">Employee ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.FirstName)" Class="compact-sort-label">First Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  InitialDirection="SortDirection.Ascending" SortBy="new Func<Employee, object>(x => x.LastName)" Class="compact-sort-label">Last Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.Email)" Class="compact-sort-label">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.PhoneNumber)" Class="compact-sort-label">Phone Number</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.HireDate)" Class="compact-sort-label">Hire Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.JobId)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.Salary)" Class="compact-sort-label">Salary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.CommissionPct)" Class="compact-sort-label">Commission (%)</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.ManagerId)" Class="compact-sort-label">Manager ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.DepartmentId)" Class="compact-sort-label">Department ID</MudTableSortLabel></MudTh>
+            <MudTh>Delete?</MudTh>
+      
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd Style="width: 40px;" DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="First Name">@context.FirstName</MudTd>
         <MudTd DataLabel="Last Name">@context.LastName</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
@@ -59,7 +64,7 @@
         <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
         <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
         <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
-        <MudTd DataLabel="Actions">
+        <MudTd  DataLabel="Actions">
             <MudButton OnClick="async () => await DeleteEmployee(context)"
                        Color="Color.Default"
                        StartIcon="@Icons.Material.Filled.Delete">
@@ -81,7 +86,7 @@
         <MudTd DataLabel="Salary">
             <MudNumericField @bind-Value="context.Salary" Min="0" />
         </MudTd>
-        <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
+            <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
         <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
         <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
         <MudTd DataLabel="Actions">
@@ -92,69 +97,16 @@
         </MudTd>
     </RowEditingTemplate>
     <PagerContent>
-        <MudTablePager PageSizeOptions="@(new int[] { 20, 50, 100 })" />
+        <MudTablePager RowsPerPageString="Records per page" PageSizeOptions="@(new int[] { 20, 50, 100 })" />
     </PagerContent>
     <EditButtonContent Context="button">
         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
     </EditButtonContent>
 </MudTable>
-
-<MudSwitch @bind-Value="hover" Color="Color.Primary">Hover</MudSwitch>
-<MudSwitch @bind-Value="dense" Color="Color.Secondary">Dense</MudSwitch>
-<MudSwitch @bind-Value="ronly" Color="Color.Tertiary">Read Only</MudSwitch>
-<MudSwitch @bind-Value="canCancelEdit" Color="Color.Info">Can Cancel Edit</MudSwitch>
-<MudSwitch @bind-Value="blockSwitch" Color="Color.Success">Block Edit Row Switching</MudSwitch>
-<MudGrid>
-    <MudItem xs="12" md="4">
-        <MudSelect Label="Edit Trigger" T="TableEditTrigger" @bind-Value="editTrigger">
-            <MudSelectItem Value="TableEditTrigger.RowClick">Row Click</MudSelectItem>
-            <MudSelectItem Value="TableEditTrigger.EditButton">Edit Button</MudSelectItem>
-        </MudSelect>
-    </MudItem>
-    @if (editTrigger == TableEditTrigger.EditButton)
-    {
-        <MudItem xs="12" md="4">
-            <MudSelect Label="Edit Button Position" T="TableEditButtonPosition" @bind-Value="editButtonPosition">
-                <MudSelectItem Value="TableEditButtonPosition.Start">Start</MudSelectItem>
-                <MudSelectItem Value="TableEditButtonPosition.End">End</MudSelectItem>
-                <MudSelectItem Value="TableEditButtonPosition.StartAndEnd">Start and End</MudSelectItem>
-            </MudSelect>
-        </MudItem>
-    }
-    <MudItem xs="12" md="4">
-        <MudSelect Label="Apply Button Position" T="TableApplyButtonPosition" @bind-Value="applyButtonPosition">
-            <MudSelectItem Value="TableApplyButtonPosition.Start">Start</MudSelectItem>
-            <MudSelectItem Value="TableApplyButtonPosition.End">End</MudSelectItem>
-            <MudSelectItem Value="TableApplyButtonPosition.StartAndEnd">Start and End</MudSelectItem>
-        </MudSelect>
-    </MudItem>
-</MudGrid>
-
-<MudText HtmlTag="span">Selected1: @selectedItem1?.Id</MudText>
-
-<MudExpansionPanels Style="flex: 1;">
-    <MudExpansionPanel Text="Show inline-edit event log">
-        @foreach (var message in editEvents)
-        {
-            <MudText>@message</MudText>
-        }
-        @if (editEvents.Count > 0)
-        {
-            <div class="d-flex">
-                <MudSpacer />
-                <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="ClearEventLog">Clear event log</MudButton>
-            </div>
-        }
-    </MudExpansionPanel>
-</MudExpansionPanels>
-</MudContainer>
+</div>
 @code {
+    private MudTable<Employee> tableRef;
     private List<string> editEvents = new();
-    private bool dense = true;
-    private bool hover = true;
-    private bool ronly = false;
-    private bool canCancelEdit = false;
-    private bool blockSwitch = false;
     private string searchString = "";
     private Employee selectedItem1 = null;
     private Employee elementBeforeEdit;
@@ -231,13 +183,19 @@
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (element.LastName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
-            return true;
-        if (element.FirstName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
-            return true;
-        if (element.Email?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
-            return true;
-        return false;
+
+        var searchLower = searchString.ToLower();
+
+        return (element.LastName?.ToLower().Contains(searchLower) == true) ||
+               (element.FirstName?.ToLower().Contains(searchLower) == true) ||
+               (element.Email?.ToLower().Contains(searchLower) == true) ||
+                 (element.JobId?.ToLower().Contains(searchLower) == true) ||
+                 (element.PhoneNumber?.ToLower().Contains(searchLower) == true) ||
+                 (element.Id.ToString().Contains(searchLower) == true) ||
+                 (element.HireDate.ToString().Contains(searchLower) == true) ||
+                 (element.Salary?.ToString().Contains(searchLower) == true) ||
+                 (element.ManagerId?.ToString().Contains(searchLower) == true) ||
+                 (element.DepartmentId?.ToString().Contains(searchLower) == true);
     }
 
     private async Task UpdateEmployee(Employee employee)

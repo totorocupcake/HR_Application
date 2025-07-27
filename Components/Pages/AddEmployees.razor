@@ -47,43 +47,82 @@
                 </MudItem>
 
                 <MudItem xs="12" md="6">
-                    <MudSelect @bind-Value="Job" Label="Job" HelperText="String" Placeholder="Please Select" Required="true">
-                        <MudSelectItem Value="@("Pizza")" Disabled="true">Pizza (Disabled)</MudSelectItem>
-                        <MudSelectItem Value="@("Burger")">Burger</MudSelectItem>
-                        <MudSelectItem Value="@("Hotdog")">Hot Dog</MudSelectItem>
+                    <MudSelect @bind-Value="Job" T="JobDropdownItem" Label="Job" Placeholder="Please Select" Required="true">
+                        @if (jobs == null)
+                         {
+                            <MudSelectItem T="JobDropdownItem" Disabled="true">Loading jobs...</MudSelectItem>
+                                }
+                                else if (!jobs.Any())
+                                {
+                            <MudSelectItem T="JobDropdownItem" Disabled="true">No jobs available</MudSelectItem>
+                                }
+                                else
+                                {
+                                    @foreach (var job in jobs)
+                                    {
+                                <MudSelectItem Value="@job">@job.JobTitle (@job.JobId)</MudSelectItem>
+                                    }
+                            }       </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="Manager" T="ManagerDropDownItem" Label="Manager" Placeholder="Please Select" ToStringFunc="@(m => m == null ? "None" : $"{m.FirstName} {m.LastName}")">
+
+                        <MudSelectItem T="ManagerDropDownItem" Value="@null">None</MudSelectItem>
+
+                        @if (managers == null)
+                         {
+                            <MudSelectItem T="ManagerDropDownItem" Disabled="true">Loading managers...</MudSelectItem>
+                                }
+                                else if (!managers.Any())
+                                {
+                            <MudSelectItem T="ManagerDropDownItem" Disabled="true">No managers available</MudSelectItem>
+                                }
+                                else
+                                {
+
+                                    @foreach (var manager in managers)
+                                    {
+                                <MudSelectItem value="@manager">
+                                    @manager.FirstName @manager.LastName (@manager.ManagerId)
+                                </MudSelectItem>
+                                    }
+                                }
                     </MudSelect>
                 </MudItem>
 
                 <MudItem xs="12" md="6">
-                    <MudSelect @bind-Value="Manager" Label="Manager" HelperText="String" Placeholder="Please Select">
-                        <MudSelectItem Value="@("Pizza")" Disabled="true">Pizza (Disabled)</MudSelectItem>
-                        <MudSelectItem Value="@("Burger")">Burger</MudSelectItem>
-                        <MudSelectItem Value="@("Hotdog")">Hot Dog</MudSelectItem>
+                    <MudSelect @bind-Value="Department" T="DepartmentDropDownItem" Label="Department" Placeholder="Please Select" ToStringFunc="@(m => m == null ? "None" : $"{m.DepartmentName} {m.DepartmentId}")">
+
+                        <MudSelectItem T="DepartmentDropDownItem" Value="@null">None</MudSelectItem>
+
+                        @if (departments == null)
+                        {
+                            <MudSelectItem T="DepartmentDropDownItem" Disabled="true">Loading departments...</MudSelectItem>
+                        }
+                        else if (!managers.Any())
+                        {
+                            <MudSelectItem T="DepartmentDropDownItem" Disabled="true">No departments available</MudSelectItem>
+                        }
+                        else
+                        {
+                            @foreach (var department in departments)
+                            {
+                                <MudSelectItem value="@department">
+                                    @department.DepartmentName (@department.DepartmentId)
+                                </MudSelectItem>
+                            }
+                        }
                     </MudSelect>
                 </MudItem>
 
-                <MudItem xs="12" md="6">
-                    <MudSelect @bind-Value="Department" Label="Department" HelperText="String" Placeholder="Please Select">
-                        <MudSelectItem Value="@("Pizza")" Disabled="true">Pizza (Disabled)</MudSelectItem>
-                        <MudSelectItem Value="@("Burger")">Burger</MudSelectItem>
-                        <MudSelectItem Value="@("Hotdog")">Hot Dog</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
 
-
-                <MudItem xs="12" Class="mt-6">
+                <MudItem xs="12" Class="mt-6 d-flex justify-end">
                
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form.ResetAsync())" Class="mx-2">Reset</MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" onclick="AddEmployee">Add Employee</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form.ResetAsync())" Class="mr-2">Reset</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" OnClick="AddEmployee">Add Employee</MudButton>
                
                 </MudItem>
-
-        <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DropShadow="false" OnClick="@(() => form.Validate())">Validate</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form.ResetAsync())" Class="mx-2">Reset</MudButton>
-            <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="@(() => form.ResetValidation())">Reset Validation</MudButton>
-        </MudPaper>
-   
             </MudGrid>
         </MudForm>
     </MudPaper>
@@ -95,13 +134,31 @@
     MudForm form;
     private DateTime? HireDate = DateTime.Today;
     public double Salary { get; set; }
-    public string Job { get; set; }
-    public string Department { get; set; }
-    public string Manager { get; set; }
+    public JobDropdownItem Job { get; set; }
+    public DepartmentDropDownItem Department { get; set; }
+    public ManagerDropDownItem? Manager { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Phone { get; set; }
+    private List<JobDropdownItem> jobs;
+    private List<ManagerDropDownItem> managers;
+    private List<DepartmentDropDownItem> departments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            jobs = await OracleDataService.GetJobsForDropDown();
+            managers = await OracleDataService.GetManagersForDropDown();
+            departments = await OracleDataService.GetDepartmentsForDropDown();
+        }
+        catch (Exception ex)
+        {
+            // Handle error (show message, etc.)
+            Console.WriteLine($"Error loading jobs: {ex.Message}");
+        }
+    }
 
     private async Task AddEmployee()
     {
@@ -116,10 +173,7 @@
 
         try
         {
-            int managerID=100;
-            int departmentID=90;
-            Job = "AD_PRES";
-
+            
             var result = await OracleDataService.addEmployeeAsync(
                 FirstName,
                 LastName,
@@ -127,15 +181,15 @@
                 Salary,
                 HireDate ?? DateTime.Now, // Handle null case
                 Phone,
-                Job,
-                managerID,
-                departmentID
+                Job.JobId,
+                Manager?.ManagerId,
+                Department?.DepartmentId
             );
 
             if (result)
             {
                 Snackbar.Add("Employee added successfully!", Severity.Success);
-                NavigationManager.NavigateTo("/addemployee");
+                await form.ResetAsync();
             }
             
         }

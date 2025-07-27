@@ -3,10 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
-using System.Text.RegularExpressions;
+using HR_Application.Models;
 
 public class OracleDataService
 {
@@ -264,8 +262,105 @@ public class OracleDataService
         }
     }
 
+    public async Task<List<JobDropdownItem>> GetJobsForDropDown()
+    {
+        var jobs = new List<JobDropdownItem>();
 
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
 
+            string query = "SELECT distinct job_id, job_title FROM hr_jobs ORDER BY job_id";
+            using var command = new OracleCommand(query, connection);
+            using var reader = await command.ExecuteReaderAsync();
 
+            while (await reader.ReadAsync())
+            {
+                jobs.Add(new JobDropdownItem
+                {
+                    JobId = reader["job_id"].ToString(),
+                    JobTitle = reader["job_title"].ToString()
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error here
+            Console.WriteLine($"Error fetching jobs: {ex.Message}");
+            throw; // Re-throw if you want calling code to handle it
+        }
+
+        return jobs;
+    }
+
+    public async Task<List<ManagerDropDownItem>> GetManagersForDropDown()
+    {
+        var managers = new List<ManagerDropDownItem>();
+
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = "SELECT DISTINCT employee_id, first_name, last_name " +
+                      "FROM hr_employees " +
+                      "WHERE employee_id IN (SELECT manager_id FROM hr_employees) " +
+                      "ORDER BY last_name, first_name";
+
+            using var command = new OracleCommand(query, connection);
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                managers.Add(new ManagerDropDownItem
+                {
+                    ManagerId = Convert.ToInt32(reader["employee_id"]),
+                    FirstName = $"{reader["first_name"]}",
+                    LastName = $"{reader["last_name"]}"
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error here
+            Console.WriteLine($"Error fetching jobs: {ex.Message}");
+            throw; // Re-throw if you want calling code to handle it
+        }
+
+        return managers;
+    }
+    public async Task<List<DepartmentDropDownItem>> GetDepartmentsForDropDown()
+    {
+        var departments = new List<DepartmentDropDownItem>();
+
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = "SELECT distinct department_id, department_name FROM hr_departments ORDER BY department_id";
+
+            using var command = new OracleCommand(query, connection);
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                departments.Add(new DepartmentDropDownItem
+                {
+                    DepartmentId = Convert.ToInt32(reader["department_id"]),
+                    DepartmentName = reader["department_name"].ToString()
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error here
+            Console.WriteLine($"Error fetching departments: {ex.Message}");
+            throw; // Re-throw if you want calling code to handle it
+        }
+
+        return departments;
+    }
 
 }
