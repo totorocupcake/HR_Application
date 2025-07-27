@@ -1,0 +1,102 @@
+﻿@page "/addEmployee"
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-6">Add New Employee</MudText>
+    <MudPaper Class="pa-6" Elevation="3">
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Class="mb-4">Personal Information</MudText>
+                    <MudDivider Class="mb-4" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Label="First Name" @bind-Value="FirstName" Required="false" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Label="Last Name" @bind-Value="LastName" Required="true" RequiredError="Last name is required!" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Label="Email" @bind-Value="Email" Required="true" RequiredError="Email is required!" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Label="Phone" @bind-Value="Phone" Required="false" />
+                </MudItem>
+
+                <MudItem xs="12" Class="mt-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Employment Information</MudText>
+                    <MudDivider Class="mb-4" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudDatePicker Label="Hire Date" Editable="true" @bind-Date="HireDate" Placeholder="Select Date" Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="Salary" Label="Salary" Variant="Variant.Text" Min="0" Max="10" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="Job" Label="Job" HelperText="String" Placeholder="Please Select" Required="true">
+                        <MudSelectItem Value="@("Pizza")" Disabled="true">Pizza (Disabled)</MudSelectItem>
+                        <MudSelectItem Value="@("Burger")">Burger</MudSelectItem>
+                        <MudSelectItem Value="@("Hotdog")">Hot Dog</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="Manager" Label="Manager" HelperText="String" Placeholder="Please Select">
+                        <MudSelectItem Value="@("Pizza")" Disabled="true">Pizza (Disabled)</MudSelectItem>
+                        <MudSelectItem Value="@("Burger")">Burger</MudSelectItem>
+                        <MudSelectItem Value="@("Hotdog")">Hot Dog</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="Department" Label="Department" HelperText="String" Placeholder="Please Select">
+                        <MudSelectItem Value="@("Pizza")" Disabled="true">Pizza (Disabled)</MudSelectItem>
+                        <MudSelectItem Value="@("Burger")">Burger</MudSelectItem>
+                        <MudSelectItem Value="@("Hotdog")">Hot Dog</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+
+                <MudItem xs="12" Class="mt-6">
+               
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form.ResetAsync())" Class="mx-2">Reset</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto">Add Employee</MudButton>
+               
+                </MudItem>
+
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DropShadow="false" OnClick="@(() => form.Validate())">Validate</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form.ResetAsync())" Class="mx-2">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="@(() => form.ResetValidation())">Reset Validation</MudButton>
+        </MudPaper>
+   
+            </MudGrid>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    bool success;
+    string[] errors = { };
+    MudForm form;
+    private DateTime? HireDate = DateTime.Today;
+    public double Salary { get; set; }
+    public string Job { get; set; }
+    public string Department { get; set; }
+    public string Manager { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    
+}

@@ -12,9 +12,9 @@
     <link href="_content/MudBlazor/MudBlazor.min.css?v=@(MudBlazor.Metadata.Version)" rel="stylesheet" />
 
 </head>
-
+<HeadOutlet @rendermode="RenderMode.InteractiveServer" />
 <body>
-    <Routes />
+    <Routes @rendermode="RenderMode.InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js?v=@(MudBlazor.Metadata.Version)"></script>
 

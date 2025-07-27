@@ -1,0 +1,277 @@
+﻿@page "/helloedit"
+
+@using System.Net.Http.Json
+@using HR_Application.Models
+@using MudBlazor
+
+@inject OracleDataService OracleDataService
+@inject ISnackbar Snackbar
+
+<h3>HelloEdit</h3>
+
+<MudTable Items="@Employees" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" 
+          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" 
+          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="@blockSwitch" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Header Text</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        @if (applyButtonPosition.DisplayApplyButtonAtStart() || (editButtonPosition.DisplayEditButtonAtStart() && editTrigger == TableEditTrigger.EditButton))
+        {
+            <col style="width:50px;" />
+        }
+        <col style="width:50px;" />
+        <col style="width:80px;" />
+        <col style="width:50%;" />
+        <col />
+        <col />
+        @if (applyButtonPosition.DisplayApplyButtonAtEnd() || (editButtonPosition.DisplayEditButtonAtEnd() && editTrigger == TableEditTrigger.EditButton))
+        {
+            <col style="width:50px;" />
+        }
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Id)">Employee ID</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.FirstName)">FirstName</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Employee, object>(x => x.LastName)">LastName</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.PhoneNumber)">PhoneNumber</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.HireDate)">HireDate</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.JobId)">JobId</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Salary)">Salary</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.CommissionPct)">CommissionPct</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.ManagerId)">ManagerId</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.DepartmentId)">DepartmentId</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+        <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Phone Number">@context.PhoneNumber</MudTd>
+        <MudTd DataLabel="Hire Date">@context.HireDate</MudTd>
+        <MudTd DataLabel="Job Id">@context.JobId</MudTd>
+        <MudTd DataLabel="Salary">@context.Salary</MudTd>
+        <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
+        <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
+        <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
+        <MudTd DataLabel="Actions">
+            <MudButton OnClick="async () => await DeleteEmployee(context)"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Delete">
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
+        <MudTd DataLabel="LastName">@context.LastName</MudTd>
+        <MudTd DataLabel="Email">
+            <MudTextField @bind-Value="context.Email" Required />
+        </MudTd>
+        <MudTd DataLabel="Phone Number">
+            <MudTextField @bind-Value="context.PhoneNumber"/>
+        </MudTd>
+        <MudTd DataLabel="Hire Date">@context.HireDate</MudTd>
+        <MudTd DataLabel="Job Id">@context.JobId</MudTd>
+        <MudTd DataLabel="Salary">
+            <MudNumericField @bind-Value="context.Salary" Min="0" />
+        </MudTd>
+        <MudTd DataLabel="Commission Pct">@context.CommissionPct</MudTd>
+        <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
+        <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
+       
+    </RowEditingTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+    <EditButtonContent Context="button">
+        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+    </EditButtonContent>
+</MudTable>
+
+<MudSwitch @bind-Value="hover" Color="Color.Primary">Hover</MudSwitch>
+<MudSwitch @bind-Value="dense" Color="Color.Secondary">Dense</MudSwitch>
+<MudSwitch @bind-Value="ronly" Color="Color.Tertiary">Read Only</MudSwitch>
+<MudSwitch @bind-Value="canCancelEdit" Color="Color.Info">Can Cancel Edit</MudSwitch>
+<MudSwitch @bind-Value="blockSwitch" Color="Color.Success">Block Edit Row Switching</MudSwitch>
+<MudGrid>
+    <MudItem xs="12" md="4">
+        <MudSelect Label="Edit Trigger" T="TableEditTrigger" @bind-Value="editTrigger">
+            <MudSelectItem Value="TableEditTrigger.RowClick">Row Click</MudSelectItem>
+            <MudSelectItem Value="TableEditTrigger.EditButton">Edit Button</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+    @if (editTrigger == TableEditTrigger.EditButton)
+    {
+        <MudItem xs="12" md="4">
+            <MudSelect Label="Edit Button Position" T="TableEditButtonPosition" @bind-Value="editButtonPosition">
+                <MudSelectItem Value="TableEditButtonPosition.Start">Start</MudSelectItem>
+                <MudSelectItem Value="TableEditButtonPosition.End">End</MudSelectItem>
+                <MudSelectItem Value="TableEditButtonPosition.StartAndEnd">Start and End</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+    }
+    <MudItem xs="12" md="4">
+        <MudSelect Label="Apply Button Position" T="TableApplyButtonPosition" @bind-Value="applyButtonPosition">
+            <MudSelectItem Value="TableApplyButtonPosition.Start">Start</MudSelectItem>
+            <MudSelectItem Value="TableApplyButtonPosition.End">End</MudSelectItem>
+            <MudSelectItem Value="TableApplyButtonPosition.StartAndEnd">Start and End</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+
+<MudText HtmlTag="span">Selected1: @selectedItem1?.Id</MudText>
+
+<MudExpansionPanels Style="flex: 1;">
+    <MudExpansionPanel Text="Show inline-edit event log">
+        @foreach (var message in editEvents)
+        {
+            <MudText>@message</MudText>
+        }
+        @if (editEvents.Count > 0)
+        {
+            <div class="d-flex">
+                <MudSpacer />
+                <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="ClearEventLog">Clear event log</MudButton>
+            </div>
+        }
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    private List<string> editEvents = new();
+    private bool dense = true;
+    private bool hover = true;
+    private bool ronly = false;
+    private bool canCancelEdit = false;
+    private bool blockSwitch = false;
+    private string searchString = "";
+    private Employee selectedItem1 = null;
+    private Employee elementBeforeEdit;
+    private Employee currentEditItem;
+    private HashSet<Employee> selectedItems1 = new HashSet<Employee>();
+    private TableApplyButtonPosition applyButtonPosition = TableApplyButtonPosition.End;
+    private TableEditButtonPosition editButtonPosition = TableEditButtonPosition.End;
+    private TableEditTrigger editTrigger = TableEditTrigger.RowClick;
+    private List<Employee> Employees { get; set; } = new List<Employee>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Employees = await OracleDataService.GetDataForModels<Employee>(0);
+    }
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+        {
+            Id = ((Employee)element).Id,
+            FirstName = ((Employee)element).FirstName,
+            LastName = ((Employee)element).LastName,
+            Email = ((Employee)element).Email,
+            PhoneNumber = ((Employee)element).PhoneNumber,
+            HireDate = ((Employee)element).HireDate,
+            JobId = ((Employee)element).JobId,
+            Salary = ((Employee)element).Salary,
+            CommissionPct = ((Employee)element).CommissionPct,
+            ManagerId = ((Employee)element).ManagerId,
+            DepartmentId = ((Employee)element).DepartmentId,
+        };
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((Employee)element).Id}");
+    }
+
+    private async Task ItemHasBeenCommitted(object element)
+    {
+        var employee = (Employee)element;
+
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((Employee)element).Id} committed");
+
+        // Update the database
+        await UpdateEmployee(employee);
+
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((Employee)element).Id = elementBeforeEdit.Id;
+        ((Employee)element).FirstName = elementBeforeEdit.FirstName;
+        ((Employee)element).LastName = elementBeforeEdit.LastName;
+        ((Employee)element).Email = elementBeforeEdit.Email;
+        ((Employee)element).PhoneNumber = elementBeforeEdit.PhoneNumber;
+        ((Employee)element).HireDate = elementBeforeEdit.HireDate;
+        ((Employee)element).JobId = elementBeforeEdit.JobId;
+        ((Employee)element).Salary = elementBeforeEdit.Salary;
+        ((Employee)element).CommissionPct = elementBeforeEdit.CommissionPct;
+        ((Employee)element).ManagerId = elementBeforeEdit.ManagerId;
+        ((Employee)element).DepartmentId = elementBeforeEdit.DepartmentId;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((Employee)element).Id} canceled");
+    }
+
+    private bool FilterFunc(Employee element)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.LastName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+        if (element.FirstName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+        if (element.Email?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+        return false;
+    }
+
+    private async Task UpdateEmployee(Employee employee)
+    {
+        try
+        {
+            await OracleDataService.UpdateEmployeeAsync(
+                employee.Id,
+                employee.Salary,
+                employee.PhoneNumber,
+                employee.Email);
+
+            Snackbar.Add("Employee updated successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteEmployee(Employee employee)
+    {
+        try
+        {
+            await OracleDataService.DeleteEmployeeAsync(employee.Id);
+            // Refresh the Employees list after deletion
+            Employees = await OracleDataService.GetDataForModels<Employee>(0);
+            StateHasChanged();
+            Snackbar.Add("Employee deleted successfully!", Severity.Success);
+
+            
+            
+        }
+        catch (Exception ex)
+        {
+            Employees = await OracleDataService.GetDataForModels<Employee>(0);
+            StateHasChanged();
+            Snackbar.Add($"Error deleting employee: {ex.Message}", Severity.Error);
+        }
+    }
+
+}
+

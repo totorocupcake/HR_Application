@@ -17,57 +17,6 @@ public class OracleDataService
          _connectionString = configuration.GetConnectionString("OracleConnection");
     }
 
-    public async Task<List<string>> GetSomeDataAsync()
-    {
-        var data = new List<string>();
-        using (var connection = new OracleConnection(_connectionString))
-        {
-            await connection.OpenAsync();
-            using (var command = new OracleCommand("SELECT employee_id FROM hr_employees", connection))
-            {
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        data.Add(reader.GetString(0));
-                    }
-                }
-            }
-        }
-        return data;
-    }
-
-    public async Task<List<Dictionary<string, object>>> GetEmployees()
-    {
-        var results = new List<Dictionary<string, object>>();
-        using (var connection = new OracleConnection(_connectionString))
-        {
-            await connection.OpenAsync();
-            using (var command = new OracleCommand("SELECT * FROM hr_employees", connection))
-            {
- 
-                    using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        var row = new Dictionary<string, object>();
-
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            string columnName = reader.GetName(i);
-                            object value = reader.GetValue(i);
-
-                            row[columnName] = value is DBNull ? null : value;
-                        }
-
-                        results.Add(row);
-                    }
-                }
-            }
-        }
-        return results;
-    }
-
 
     public async Task<List<Dictionary<string, object>>> GetData(int type)
     {
@@ -140,6 +89,42 @@ public class OracleDataService
 
         return MapDataReaderToObjects<T>(reader);
     }
+
+
+    public async Task UpdateEmployeeAsync(int id, double? salary, string? phoneNumber, string email)
+    {
+        using var connection = new OracleConnection(_connectionString);
+
+        try
+        {
+            await connection.OpenAsync();
+
+            using var command = new OracleCommand("Employee_update_sp", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add parameters with proper null handling
+            command.Parameters.Add(new OracleParameter("EMPLOYEE_ID", OracleDbType.Int32)).Value = id;
+            command.Parameters.Add(new OracleParameter("SALARY", OracleDbType.Double)).Value = salary ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("PHONE_NUMBER", OracleDbType.Varchar2)).Value = phoneNumber ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("EMAIL", OracleDbType.Varchar2)).Value = email;
+
+            await command.ExecuteNonQueryAsync();
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
+    }
+
 
     // Core mapping logic
     private List<T> MapDataReaderToObjects<T>(IDataReader reader) where T : new()
@@ -218,4 +203,22 @@ public class OracleDataService
                 $"Target: {property.PropertyType.Name}.", ex);
         }
     }
+
+    public async Task<bool> DeleteEmployeeAsync(int employeeId)
+    {
+        using var connection = new OracleConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Use parameterized query to prevent SQL injection
+        const string query = "DELETE FROM hr_employees WHERE employee_id = :employeeId";
+
+        using var command = new OracleCommand(query, connection);
+        command.Parameters.Add(new OracleParameter("employeeId", OracleDbType.Int32)).Value = employeeId;
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        // Return true if at least one row was deleted
+        return rowsAffected > 0;
+    }
+
 }
