@@ -8,8 +8,8 @@
 @inject ISnackbar Snackbar
 
 <h3>HelloEdit</h3>
-
-<MudTable Items="@Employees" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" 
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+<MudTable Items="@Employees" Dense="true" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" Striped = "true"
           @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" 
           RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
           RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="@blockSwitch" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
@@ -45,6 +45,7 @@
         <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.CommissionPct)">CommissionPct</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.ManagerId)">ManagerId</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.DepartmentId)">DepartmentId</MudTableSortLabel></MudTh>
+        <MudTh>Delete?</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
@@ -60,7 +61,7 @@
         <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
         <MudTd DataLabel="Actions">
             <MudButton OnClick="async () => await DeleteEmployee(context)"
-                       Color="Color.Primary"
+                       Color="Color.Default"
                        StartIcon="@Icons.Material.Filled.Delete">
             </MudButton>
         </MudTd>
@@ -80,13 +81,18 @@
         <MudTd DataLabel="Salary">
             <MudNumericField @bind-Value="context.Salary" Min="0" />
         </MudTd>
-        <MudTd DataLabel="Commission Pct">@context.CommissionPct</MudTd>
+        <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
         <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
         <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
-       
+        <MudTd DataLabel="Actions">
+            <MudButton OnClick="async () => await DeleteEmployee(context)"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.Delete">
+            </MudButton>
+        </MudTd>
     </RowEditingTemplate>
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager PageSizeOptions="@(new int[] { 20, 50, 100 })" />
     </PagerContent>
     <EditButtonContent Context="button">
         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
@@ -141,7 +147,7 @@
         }
     </MudExpansionPanel>
 </MudExpansionPanels>
-
+</MudContainer>
 @code {
     private List<string> editEvents = new();
     private bool dense = true;

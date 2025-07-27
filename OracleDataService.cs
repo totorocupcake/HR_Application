@@ -221,4 +221,51 @@ public class OracleDataService
         return rowsAffected > 0;
     }
 
+
+    public async Task<bool> addEmployeeAsync(string? firstName, string lastName, string email, double? salary, DateTime hireDate, string? phone, string jobId, int? managerId,int? departmentId)
+    {
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new OracleCommand("Employee_hire_sp", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add parameters with proper null handling
+            command.Parameters.Add(new OracleParameter("FIRST_NAME", OracleDbType.Varchar2)).Value = firstName ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("LAST_NAME", OracleDbType.Varchar2)).Value = lastName ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("EMAIL", OracleDbType.Varchar2)).Value = email ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("SALARY", OracleDbType.Double)).Value = salary;
+            command.Parameters.Add(new OracleParameter("HIRE_DATE", OracleDbType.Date)).Value = hireDate;
+            command.Parameters.Add(new OracleParameter("PHONE_NUMBER", OracleDbType.Varchar2)).Value = phone ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("JOB_ID", OracleDbType.Varchar2)).Value = jobId ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("MANAGER_ID", OracleDbType.Int32)).Value = managerId;
+            command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int16)).Value = departmentId;
+
+            
+
+            await command.ExecuteNonQueryAsync();
+
+            return true;
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
+    }
+
+
+
+
+
 }
