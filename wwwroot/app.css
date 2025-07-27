@@ -80,6 +80,8 @@ h1:focus {
 /* CRITICAL: Prevent container expansion */
 .mud-table-container {
     min-height: 0 !important;
+    padding: 0px 20px !important;
+}
 }
 
 /* COMPACT TOOLBAR & PAGINATION */
