@@ -11,33 +11,44 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h6" Class="mb-6">Identify Job Description</MudText>
     <MudPaper Class="pa-6" Elevation="3">
-        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+
+        <EditForm Model="@model" OnValidSubmit="IdentifyJobs">
+        <DataAnnotationsValidator/>
+       
             <MudGrid>
                 <MudItem xs="12" md="12">
-                    <MudTextField T="string" Label="Job ID" @bind-Value="JobId" Required="true" RequiredError="Job ID is required!" />
+                    <MudTextField T="string" Label="Job ID" @bind-Value="model.JobId" Required="true" RequiredError="Job ID is required!" />
                 </MudItem>
-
+                
                 <MudItem xs="12" Class="mt-6 d-flex justify-end">
-
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form!.ResetAsync())" Class="mr-2">Reset</MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary"  Class="ml-auto" OnClick="IdentifyJobs">Identify Job</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" ButtonType="ButtonType.Submit">Identify Job</MudButton>
                 </MudItem>
 
             </MudGrid>
-        </MudForm>
 
-        @if (!string.IsNullOrEmpty(JobTitle))
-        {
-            <MudDivider Class="my-4" />
-            <MudText Typo="Typo.h6">Job Description Found: @JobTitle</MudText>
-        }
-        else if (JobId != null && string.IsNullOrEmpty(JobTitle) && hasSearched)
-        {
-            <MudDivider Class="my-4" />
-            <MudText Typo="Typo.body1" Color="Color.Error">No job found with ID: @JobId</MudText>
-        }
+      
 
+            @if (hasSearched)
+            {
+                @if (!string.IsNullOrEmpty(JobTitle))
+                {
+                    <MudItem xs="12" Class="my-4">
+                        <MudAlert Severity="Severity.Success" Elevation="2">
+                            Job Description Found for @model.JobId: <strong>@JobTitle</strong>
+                        </MudAlert>
+                    </MudItem>
+                }
+                else
+                {
+                    <MudItem xs="12" Class="my-4">
+                        <MudAlert Severity="Severity.Error" Elevation="2">
+                            No job found with ID: <code>@model.JobId</code>
+                        </MudAlert>
+                    </MudItem>
+                }
+            }
 
+        </EditForm>
 
     </MudPaper>
 </MudContainer>
@@ -46,29 +57,21 @@
     bool success;
     string[] errors = { };
     MudForm? form;
-    public string? JobId { get; set; }
     public string? JobTitle { get; set; }
     private bool hasSearched = false;
+    private JobSearchModel model = new();
 
     private async Task IdentifyJobs ()
     {
 
-        await form!.Validate();
-
-        if (!success)
-        {
-            Snackbar.Add("Please fix validation errors", Severity.Warning);
-            return;
-        }
-
         try
         {
-            JobTitle = await OracleDataService.IdentifyJobs(JobId!);
+            JobTitle = await OracleDataService.IdentifyJobs(model.JobId!);
             hasSearched = true;
 
             if (string.IsNullOrEmpty(JobTitle))
             {
-                Snackbar.Add("No job found with the specified ID", Severity.Info);
+                Snackbar.Add("No job found with the specified ID", Severity.Warning);
             }
             else
             {
@@ -82,7 +85,11 @@
     }
     
            
-    
+    public class JobSearchModel
+    {
+        [Required(ErrorMessage = "Job ID is required")]
+        public string? JobId { get; set; }
+    }
 
 
 }
