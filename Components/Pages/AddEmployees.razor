@@ -44,7 +44,7 @@
                 </MudItem>
 
                 <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="Salary" Label="Salary" Variant="Variant.Text" Min="0" Max="100000" />
+                    <MudNumericField @bind-Value="Salary" Label="Salary" Variant="Variant.Text" Min="0" Step="100"/>
                 </MudItem>
 
                 <MudItem xs="12" md="6">
@@ -134,7 +134,7 @@
     string[] errors = { };
     MudForm? form;
     private DateTime? HireDate = DateTime.Today;
-    public double Salary { get; set; }
+    public double? Salary { get; set; }
     public JobDropdownItem? Job { get; set; }
     public DepartmentDropDownItem? Department { get; set; }
     public ManagerDropDownItem? Manager { get; set; }

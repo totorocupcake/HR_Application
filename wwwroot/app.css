@@ -19,15 +19,15 @@
 /* FORCE FIXED TABLE LAYOUT - This is the key fix */
 .mud-table table {
     table-layout: fixed !important;
-    width: 85% !important;
+    width: 80% !important;
 }
 
 /* DEFINE SPECIFIC COLUMN WIDTHS */
 .mud-table-header-cell:nth-child(1), /* Employee ID */
 .mud-table-cell:nth-child(1) {
-    width: 80px !important;
-    min-width: 80px !important;
-    max-width: 80px !important;
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
 }
 
 .mud-table-header-cell:nth-child(2), /* First Name */
@@ -67,9 +67,9 @@
 
 .mud-table-header-cell:nth-child(7), /* Job ID */
 .mud-table-cell:nth-child(7) {
-    width: 80px !important;
-    min-width: 80px !important;
-    max-width: 80px !important;
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
 }
 
 .mud-table-header-cell:nth-child(8), /* Salary */
@@ -81,23 +81,23 @@
 
 .mud-table-header-cell:nth-child(9), /* Commission */
 .mud-table-cell:nth-child(9) {
-    width: 100px !important;
-    min-width: 100px !important;
-    max-width: 100px !important;
+    width: 110px !important;
+    min-width: 110px !important;
+    max-width: 110px !important;
 }
 
 .mud-table-header-cell:nth-child(10), /* Manager ID */
 .mud-table-cell:nth-child(10) {
-    width: 80px !important;
-    min-width: 80px !important;
-    max-width: 80px !important;
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
 }
 
 .mud-table-header-cell:nth-child(11), /* Department ID */
 .mud-table-cell:nth-child(11) {
-    width: 90px !important;
-    min-width: 90px !important;
-    max-width: 90px !important;
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
 }
 
 .mud-table-header-cell:nth-child(12), /* Delete button */
@@ -107,9 +107,16 @@
     max-width: 60px !important;
 }
 
-/* EXTRA OVERRIDES FOR OLDER BROWSERS */
-.mud-table-cell,
-.mud-table-header {
+.mud-table-header-cell:nth-child(13), /* Delete button */
+.mud-table-cell:nth-child(13) {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+}
+
+
+    /* EXTRA OVERRIDES FOR OLDER BROWSERS */
+    .mud-table-cell, .mud-table-header {
     padding: 0px 4px !important;
     font-size: 0.75rem !important;
     overflow: hidden !important;
@@ -169,4 +176,12 @@
 
 .mud-table .mud-input-control-input-container {
     min-height: auto !important;
+}
+
+.mud-table-cell-commit-cancel {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    padding: 0 !important;
+    text-align: center !important;
 }

@@ -8,10 +8,18 @@
 @inject ISnackbar Snackbar
 
 <h3></h3>
+@if (Jobs == null)
+{
+    <p><em>Loading...</em></p>
+}
+
+else
+{
+
 <div style=" display: flex; flex-direction: column;">
     <MudTable @ref="tableRef" Class="compact-table" Items="@Jobs" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
-              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!"
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading
               RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
         <ToolBarContent>
             <MudText Typo="Typo.h6">View / Edit Jobs</MudText>
@@ -77,6 +85,7 @@
         </EditButtonContent>
     </MudTable>
 </div>
+}
 
 @code {
     private MudTable<Job>? tableRef;
@@ -89,10 +98,12 @@
     private TableEditButtonPosition editButtonPosition = TableEditButtonPosition.End;
     private TableEditTrigger editTrigger = TableEditTrigger.RowClick;
     private List<Job> Jobs { get; set; } = new List<Job>();
+    private bool loading=true;
 
     protected override async Task OnInitializedAsync()
     {
         Jobs = await OracleDataService.GetDataForModels<Job>(1);
+        loading = false;
     }
 
     private void ClearEventLog()

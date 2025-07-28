@@ -8,10 +8,17 @@
 @inject ISnackbar Snackbar
 
 <h3></h3>
-<div style=" display: flex; flex-direction: column; width: 87%;">
+@if (Employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+
+else
+{
+   
     <MudTable @ref="tableRef" Class="compact-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
-              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" 
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading 
           RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
     <ToolBarContent>
         <MudText Typo="Typo.h6">View / Edit Employees</MudText>
@@ -32,6 +39,7 @@
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.ManagerId!)" Class="compact-sort-label">Manager ID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.DepartmentId!)" Class="compact-sort-label">Department ID</MudTableSortLabel></MudTh>
             <MudTh>Delete?</MudTh>
+           
       
     </HeaderContent>
     <RowTemplate>
@@ -52,6 +60,7 @@
                        StartIcon="@Icons.Material.Filled.Delete">
             </MudButton>
         </MudTd>
+      
     </RowTemplate>
         <RowEditingTemplate>
             <MudTd DataLabel="Id">@context!.Id</MudTd>
@@ -94,11 +103,9 @@
     <PagerContent>
         <MudTablePager RowsPerPageString="Records per page" PageSizeOptions="@(new int[] { 20, 50, 100 })" />
     </PagerContent>
-    <EditButtonContent Context="button">
-        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
-    </EditButtonContent>
 </MudTable>
-</div>
+
+}
 @code {
     private MudTable<Employee>? tableRef;
     private List<string> editEvents = new();
@@ -110,10 +117,12 @@
     private TableEditButtonPosition editButtonPosition = TableEditButtonPosition.End;
     private TableEditTrigger editTrigger = TableEditTrigger.RowClick;
     private List<Employee> Employees { get; set; } = new List<Employee>();
+    private bool loading =true;
 
     protected override async Task OnInitializedAsync()
     {
         Employees = await OracleDataService.GetDataForModels<Employee>(0);
+        loading = false;
     }
 
     private void ClearEventLog()
