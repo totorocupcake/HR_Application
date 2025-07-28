@@ -394,7 +394,19 @@ public class OracleDataService
 
     public async Task<bool> DeleteJobAsync(string jobId)
     {
-        return true;
+        using var connection = new OracleConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Use parameterized query to prevent SQL injection
+        const string query = "DELETE FROM hr_jobs WHERE job_id = :job_id";
+
+        using var command = new OracleCommand(query, connection);
+        command.Parameters.Add(new OracleParameter("JOB_ID", OracleDbType.Varchar2)).Value = jobId;
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        // Return true if at least one row was deleted
+        return rowsAffected > 0;
     }
 
     public async Task UpdateJobAsync(string id, string jobTitle, int? minSalary, int? maxSalary)
