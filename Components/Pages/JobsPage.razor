@@ -16,7 +16,7 @@
 else
 {
 
-<div style=" display: flex; flex-direction: column;">
+<div style=" display: flex; flex-direction: column; width:80%">
     <MudTable @ref="tableRef" Class="compact-table" Items="@Jobs" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
               RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading
@@ -27,14 +27,14 @@ else
             <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <ColGroup>
-            <col style="width:20px;" />
-            <col style="width:40px;" />
-            <col style="width:20px;" />
-            <col style="width:20px;" />
-            <col style="width:20px;" />
+            <col style="width:15px;" />
+            <col style="width:30px;" />
+            <col style="width:10px;" />
+            <col style="width:10px;" />
+            <col style="width:5px;" />
             @if (applyButtonPosition.DisplayApplyButtonAtEnd() || (editButtonPosition.DisplayEditButtonAtEnd() && editTrigger == TableEditTrigger.EditButton))
             {
-                <col style="width:50px;" />
+                <col style="width:10px;" />
             }
         </ColGroup>
 
