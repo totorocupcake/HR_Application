@@ -3,6 +3,6 @@
     public class DepartmentDropDownItem
     { 
         public int DepartmentId { get; set; }
-        public string DepartmentName { get; set; }
+        public required string DepartmentName { get; set; }
     }
 }

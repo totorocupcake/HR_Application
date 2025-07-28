@@ -8,7 +8,7 @@ using HR_Application.Models;
 
 public class OracleDataService
 {
-    private readonly string _connectionString;
+    private readonly string? _connectionString;
 
     public OracleDataService(IConfiguration configuration)
     {
@@ -16,7 +16,7 @@ public class OracleDataService
     }
 
 
-    public async Task<List<Dictionary<string, object>>> GetData(int type)
+    public async Task<List<Dictionary<string, object?>>> GetData(int type)
     {
         var tableMap = new Dictionary<int, string>
     {
@@ -24,12 +24,12 @@ public class OracleDataService
         { 1, "hr_jobs" },
         { 2, "hr_departments" },
     };
-        if (!tableMap.TryGetValue(type, out string tableName))
+        if (!tableMap.TryGetValue(type, out string? tableName))
         {
             throw new ArgumentException($"Invalid data type: {type}");
         }
 
-        var results = new List<Dictionary<string, object>>();
+        var results = new List<Dictionary<string, object?>>();
         using (var connection = new OracleConnection(_connectionString))
         {
             await connection.OpenAsync();
@@ -45,7 +45,7 @@ public class OracleDataService
                 {
                     while (await reader.ReadAsync())
                     {
-                        var row = new Dictionary<string, object>();
+                        var row = new Dictionary<string, object?>();
 
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
@@ -183,7 +183,7 @@ public class OracleDataService
             }
 
             // Special handling for enums
-            if (targetType.IsEnum)
+            if (targetType!.IsEnum)
             {
                 property.SetValue(obj, Enum.ToObject(targetType, value));
                 return;
@@ -279,8 +279,8 @@ public class OracleDataService
             {
                 jobs.Add(new JobDropdownItem
                 {
-                    JobId = reader["job_id"].ToString(),
-                    JobTitle = reader["job_title"].ToString()
+                    JobId = reader["job_id"].ToString()!,
+                    JobTitle = reader["job_title"].ToString()!
                 });
             }
         }
@@ -349,7 +349,7 @@ public class OracleDataService
                 departments.Add(new DepartmentDropDownItem
                 {
                     DepartmentId = Convert.ToInt32(reader["department_id"]),
-                    DepartmentName = reader["department_name"].ToString()
+                    DepartmentName = reader["department_name"].ToString()!
                 });
             }
         }

@@ -11,7 +11,7 @@
 <div style=" display: flex; flex-direction: column;">
     <MudTable @ref="tableRef" Class="compact-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
-              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc" Filterable="true"
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" 
           RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
     <ToolBarContent>
         <MudText Typo="Typo.h6">View / Edit Employees</MudText>
@@ -39,58 +39,58 @@
     <HeaderContent>
         
             <MudTh Style="width: 40px;"><MudTableSortLabel SortBy="new Func<Employee, object>(x => x.Id)" Class="compact-sort-label">Employee ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.FirstName)" Class="compact-sort-label">First Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.FirstName!)" Class="compact-sort-label">First Name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  InitialDirection="SortDirection.Ascending" SortBy="new Func<Employee, object>(x => x.LastName)" Class="compact-sort-label">Last Name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.Email)" Class="compact-sort-label">Email</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.PhoneNumber)" Class="compact-sort-label">Phone Number</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.PhoneNumber!)" Class="compact-sort-label">Phone Number</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.HireDate)" Class="compact-sort-label">Hire Date</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.JobId)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.Salary)" Class="compact-sort-label">Salary</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.CommissionPct)" Class="compact-sort-label">Commission (%)</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.ManagerId)" Class="compact-sort-label">Manager ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.DepartmentId)" Class="compact-sort-label">Department ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.Salary!)" Class="compact-sort-label">Salary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.CommissionPct!)" Class="compact-sort-label">Commission (%)</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.ManagerId!)" Class="compact-sort-label">Manager ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.DepartmentId!)" Class="compact-sort-label">Department ID</MudTableSortLabel></MudTh>
             <MudTh>Delete?</MudTh>
       
     </HeaderContent>
     <RowTemplate>
-        <MudTd Style="width: 40px;" DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="First Name">@context.FirstName</MudTd>
-        <MudTd DataLabel="Last Name">@context.LastName</MudTd>
-        <MudTd DataLabel="Email">@context.Email</MudTd>
-        <MudTd DataLabel="Phone Number">@context.PhoneNumber</MudTd>
-        <MudTd DataLabel="Hire Date">@context.HireDate</MudTd>
-        <MudTd DataLabel="Job Id">@context.JobId</MudTd>
-        <MudTd DataLabel="Salary">@context.Salary</MudTd>
-        <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
-        <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
-        <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
+        <MudTd Style="width: 40px;" DataLabel="Id">@context!.Id</MudTd>
+        <MudTd DataLabel="First Name">@context!.FirstName</MudTd>
+        <MudTd DataLabel="Last Name">@context!.LastName</MudTd>
+        <MudTd DataLabel="Email">@context!.Email</MudTd>
+        <MudTd DataLabel="Phone Number">@context!.PhoneNumber</MudTd>
+        <MudTd DataLabel="Hire Date">@context!.HireDate</MudTd>
+        <MudTd DataLabel="Job Id">@context!.JobId</MudTd>
+        <MudTd DataLabel="Salary">@context!.Salary</MudTd>
+        <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))</MudTd>
+        <MudTd DataLabel="Manager Id">@context!.ManagerId</MudTd>
+        <MudTd DataLabel="Department Id">@context!.DepartmentId</MudTd>
         <MudTd  DataLabel="Actions">
-            <MudButton OnClick="async () => await DeleteEmployee(context)"
+            <MudButton OnClick="async () => await DeleteEmployee(context!)"
                        Color="Color.Default"
                        StartIcon="@Icons.Material.Filled.Delete">
             </MudButton>
         </MudTd>
     </RowTemplate>
     <RowEditingTemplate>
-        <MudTd DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="FirstName">@context.FirstName</MudTd>
-        <MudTd DataLabel="LastName">@context.LastName</MudTd>
+        <MudTd DataLabel="Id">@context!.Id</MudTd>
+        <MudTd DataLabel="FirstName">@context!.FirstName</MudTd>
+        <MudTd DataLabel="LastName">@context!.LastName</MudTd>
         <MudTd DataLabel="Email">
-            <MudTextField @bind-Value="context.Email" Required />
+            <MudTextField @bind-Value="context!.Email" Required />
         </MudTd>
         <MudTd DataLabel="Phone Number">
-            <MudTextField @bind-Value="context.PhoneNumber"/>
+            <MudTextField @bind-Value="context!.PhoneNumber"/>
         </MudTd>
-        <MudTd DataLabel="Hire Date">@context.HireDate</MudTd>
-        <MudTd DataLabel="Job Id">@context.JobId</MudTd>
+        <MudTd DataLabel="Hire Date">@context!.HireDate</MudTd>
+        <MudTd DataLabel="Job Id">@context!.JobId</MudTd>
         <MudTd DataLabel="Salary">
-            <MudNumericField @bind-Value="context.Salary" Min="0" />
+            <MudNumericField @bind-Value="context!.Salary" Min="0" />
         </MudTd>
-            <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context.CommissionPct ?? 0), 2))</MudTd>
-        <MudTd DataLabel="Manager Id">@context.ManagerId</MudTd>
-        <MudTd DataLabel="Department Id">@context.DepartmentId</MudTd>
+            <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))</MudTd>
+        <MudTd DataLabel="Manager Id">@context!.ManagerId</MudTd>
+        <MudTd DataLabel="Department Id">@context!.DepartmentId</MudTd>
         <MudTd DataLabel="Actions">
-            <MudButton OnClick="async () => await DeleteEmployee(context)"
+            <MudButton OnClick="async () => await DeleteEmployee(context!)"
                        Color="Color.Default"
                        StartIcon="@Icons.Material.Filled.Delete">
             </MudButton>
@@ -105,12 +105,11 @@
 </MudTable>
 </div>
 @code {
-    private MudTable<Employee> tableRef;
+    private MudTable<Employee>? tableRef;
     private List<string> editEvents = new();
     private string searchString = "";
-    private Employee selectedItem1 = null;
-    private Employee elementBeforeEdit;
-    private Employee currentEditItem;
+    private Employee? selectedItem1 = null;
+    private Employee? elementBeforeEdit;
     private HashSet<Employee> selectedItems1 = new HashSet<Employee>();
     private TableApplyButtonPosition applyButtonPosition = TableApplyButtonPosition.End;
     private TableEditButtonPosition editButtonPosition = TableEditButtonPosition.End;
@@ -165,7 +164,7 @@
 
     private void ResetItemToOriginalValues(object element)
     {
-        ((Employee)element).Id = elementBeforeEdit.Id;
+        ((Employee)element).Id = elementBeforeEdit!.Id;
         ((Employee)element).FirstName = elementBeforeEdit.FirstName;
         ((Employee)element).LastName = elementBeforeEdit.LastName;
         ((Employee)element).Email = elementBeforeEdit.Email;
@@ -192,7 +191,7 @@
                  (element.JobId?.ToLower().Contains(searchLower) == true) ||
                  (element.PhoneNumber?.ToLower().Contains(searchLower) == true) ||
                  (element.Id.ToString().Contains(searchLower) == true) ||
-                 (element.HireDate.ToString().Contains(searchLower) == true) ||
+
                  (element.Salary?.ToString().Contains(searchLower) == true) ||
                  (element.ManagerId?.ToString().Contains(searchLower) == true) ||
                  (element.DepartmentId?.ToString().Contains(searchLower) == true);

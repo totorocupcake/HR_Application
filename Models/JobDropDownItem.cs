@@ -2,7 +2,7 @@
 {
     public class JobDropdownItem
     {
-        public string JobId { get; set; }
-        public string JobTitle { get; set; }
+        public required string JobId { get; set; }
+        public required string JobTitle { get; set; }
     }
 }
