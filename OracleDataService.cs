@@ -363,4 +363,15 @@ public class OracleDataService
         return departments;
     }
 
+    public async Task<bool> DeleteJobAsync(string jobId)
+    {
+        return true;
+    }
+
+    public async Task UpdateJobAsync(string id, string jobTitle, int? minSalary, int? maxSalary)
+    {
+        await Task.CompletedTask;
+    }
 }
+
+

@@ -1,0 +1,194 @@
+﻿@page "/jobs"
+
+@using System.Net.Http.Json
+@using HR_Application.Models
+@using MudBlazor
+
+@inject OracleDataService OracleDataService
+@inject ISnackbar Snackbar
+
+<h3></h3>
+<div style=" display: flex; flex-direction: column;">
+    <MudTable @ref="tableRef" Class="compact-table" Items="@Jobs" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
+              @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!"
+              RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">View / Edit Jobs</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <ColGroup>
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            <col style="width:40px;" />
+            @if (applyButtonPosition.DisplayApplyButtonAtEnd() || (editButtonPosition.DisplayEditButtonAtEnd() && editTrigger == TableEditTrigger.EditButton))
+            {
+                <col style="width:50px;" />
+            }
+        </ColGroup>
+
+        <HeaderContent>
+            <MudTh Style="width: 40px;"><MudTableSortLabel SortBy="new Func<Job, object>(x => x.Id)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Job, object>(x => x.JobTitle!)" Class="compact-sort-label">Job Title</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MinSalary)" Class="compact-sort-label">Min Salary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MaxSalary)" Class="compact-sort-label">Max Salary</MudTableSortLabel></MudTh>
+            <MudTh>Delete?</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd Style="width: 40px;" DataLabel="Id">@context!.Id</MudTd>
+            <MudTd DataLabel="Job Title">@context!.JobTitle</MudTd>
+            <MudTd DataLabel="Min Salary">@context.MinSalary</MudTd>
+            <MudTd DataLabel="Max Salary">@context.MaxSalary</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudButton OnClick="async () => await DeleteJob(context!)"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Delete">
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+
+        <RowEditingTemplate>
+            <MudTd DataLabel="Id">@context!.Id</MudTd>
+            <MudTd DataLabel="JobTitle">
+                <MudTextField @bind-Value="context!.JobTitle" />
+            </MudTd>
+            <MudTd DataLabel="MinSalary">
+                <MudNumericField @bind-Value="context!.MinSalary" Min="0" />
+            </MudTd>
+            <MudTd DataLabel="MaxSalary">
+                <MudNumericField @bind-Value="context!.MaxSalary" Min="0" />
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudButton OnClick="async () => await DeleteJob(context!)"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Delete">
+                </MudButton>
+            </MudTd>
+        </RowEditingTemplate>
+        <PagerContent>
+            <MudTablePager RowsPerPageString="Records per page" PageSizeOptions="@(new int[] { 20, 50, 100 })" />
+        </PagerContent>
+        <EditButtonContent Context="button">
+            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+        </EditButtonContent>
+    </MudTable>
+</div>
+
+@code {
+    private MudTable<Job>? tableRef;
+    private List<string> editEvents = new();
+    private string searchString = "";
+    private Job? selectedItem1 = null;
+    private Job? elementBeforeEdit;
+    private HashSet<Job> selectedItems1 = new HashSet<Job>();
+    private TableApplyButtonPosition applyButtonPosition = TableApplyButtonPosition.End;
+    private TableEditButtonPosition editButtonPosition = TableEditButtonPosition.End;
+    private TableEditTrigger editTrigger = TableEditTrigger.RowClick;
+    private List<Job> Jobs { get; set; } = new List<Job>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Jobs = await OracleDataService.GetDataForModels<Job>(1);
+    }
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+        {
+            Id = ((Job)element).Id,
+            JobTitle = ((Job)element).JobTitle,
+            MinSalary = ((Job)element).MinSalary,
+            MaxSalary = ((Job)element).MaxSalary
+        };
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((Job)element).Id}");
+    }
+
+    private async Task ItemHasBeenCommitted(object element)
+    {
+        var job = (Job)element;
+
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((Job)element).Id} committed");
+
+        // Update the database
+        await UpdateJob(job);
+
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((Job)element).Id = elementBeforeEdit!.Id;
+        ((Job)element).JobTitle = elementBeforeEdit.JobTitle;
+        ((Job)element).MinSalary = elementBeforeEdit.MinSalary;
+        ((Job)element).MaxSalary = elementBeforeEdit.MaxSalary;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((Job)element).Id} canceled");
+    }
+
+    private bool FilterFunc(Job element)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+
+        var searchLower = searchString.ToLower();
+
+        return (element.Id?.ToLower().Contains(searchLower) == true) ||
+               (element.JobTitle?.ToLower().Contains(searchLower) == true) ||
+                 (element?.MinSalary?.ToString().Contains(searchLower) == true) ||
+                 (element?.MaxSalary?.ToString().Contains(searchLower) == true);
+    }
+
+    private async Task UpdateJob(Job job)
+    {
+        try
+        {
+            await OracleDataService.UpdateJobAsync(
+            job.Id,
+                job.JobTitle,
+                job.MinSalary,
+                job.MaxSalary);
+
+            Snackbar.Add("Job updated successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteJob(Job job)
+    {
+        try
+        {
+            await OracleDataService.DeleteJobAsync(job.Id);
+            // Refresh the Employees list after deletion
+            Jobs = await OracleDataService.GetDataForModels<Job>(1);
+            StateHasChanged();
+            Snackbar.Add("Job deleted successfully!", Severity.Success);
+
+
+
+        }
+        catch (Exception ex)
+        {
+            Jobs = await OracleDataService.GetDataForModels<Job>(1);
+            StateHasChanged();
+            Snackbar.Add($"Error deleting job: {ex.Message}", Severity.Error);
+        }
+    }
+
+}
+

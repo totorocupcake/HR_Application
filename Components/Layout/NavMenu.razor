@@ -10,9 +10,14 @@
         <MudNavLink Href="" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
         <MudNavGroup Title="Employees" Icon="@Icons.Material.Filled.Person" Expanded="true">
             <MudNavLink Href="/employees" Icon="@Icons.Material.Filled.Edit">View/Edit Employees</MudNavLink>
-            <MudNavLink Href="/addEmployee" Icon="@Icons.Material.Filled.PersonAddAlt1">Add Employee</MudNavLink>
+            <MudNavLink Href="/addEmployee" Icon="@Icons.Material.Filled.Add">Create New Employee</MudNavLink>
         </MudNavGroup>
-        <MudNavLink Href="/jobs" Icon="@Icons.Material.Filled.Work">Jobs</MudNavLink>
+
+        <MudNavGroup Title="Jobs" Icon="@Icons.Material.Filled.Work" Expanded="true">
+            <MudNavLink Href="/jobs" Icon="@Icons.Material.Filled.Edit">View/Edit Jobs</MudNavLink>
+            <MudNavLink Href="/addJob" Icon="@Icons.Material.Filled.Add">Create New Job</MudNavLink>
+            <MudNavLink Href="/identifyJob" Icon="@Icons.Material.Filled.Search">Identify Job Desc</MudNavLink>
+        </MudNavGroup>
         <MudNavLink Href="/departments" Icon="@Icons.Material.Filled.Groups">Departments</MudNavLink>
         <MudNavGroup Title="Testing" Icon="@Icons.Material.Filled.Settings" Expanded="true">
             <MudNavLink Href="/hello" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">Hello</MudNavLink>
