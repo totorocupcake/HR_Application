@@ -1,7 +1,84 @@
 ﻿@page "/addJob"
 
-<h3>AddJobs</h3>
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using HR_Application.Models
+
+@inject OracleDataService OracleDataService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h6" Class="mb-6">Add New Job</MudText>
+    <MudPaper Class="pa-6" Elevation="3">
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid>
+                <MudItem xs="12" md="12">
+                    <MudTextField T="string" Label="Job ID" @bind-Value="JobId" Required="true" RequiredError="Job ID is required!" />
+                </MudItem>
+
+                <MudItem xs="12" md="12">
+                    <MudTextField T="string" Label="Title" @bind-Value="JobTitle" Required="true" RequiredError="Job Title is required!" />
+                </MudItem>
+
+                <MudItem xs="12" md="12">
+                    <MudNumericField @bind-Value="MinSalary" Label="Min Salary" Variant="Variant.Text" Min="0" Max="100000" />
+                </MudItem>
+
+                <MudItem xs="12" md="12">
+                    <MudNumericField @bind-Value="MaxSalary" Label="Max Salary" Variant="Variant.Text" Min="0" Max="100000" />
+                </MudItem>
+
+                <MudItem xs="12" Class="mt-6 d-flex justify-end">
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form!.ResetAsync())" Class="mr-2">Reset</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" OnClick="AddJob">Add Job</MudButton>
+
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
 
 @code {
+    bool success;
+    string[] errors = { };
+    MudForm? form;
+    public int? MinSalary { get; set; }
+    public int? MaxSalary { get; set; }
+    public string? JobId { get; set; }
+    public string? JobTitle { get; set; }
+
+    private async Task AddJob()
+    {
+
+        await form!.Validate();
+
+        if (!success)
+        {
+            Snackbar.Add("Please fix validation errors", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+
+            var result = await OracleDataService.addJobAsync(
+                JobId!,JobTitle!,MinSalary,MaxSalary
+            );
+
+            if (result)
+            {
+                Snackbar.Add("Job added successfully!", Severity.Success);
+                await form.ResetAsync();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
 
 }

@@ -19,11 +19,11 @@
             <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <ColGroup>
+            <col style="width:20px;" />
             <col style="width:40px;" />
-            <col style="width:40px;" />
-            <col style="width:40px;" />
-            <col style="width:40px;" />
-            <col style="width:40px;" />
+            <col style="width:20px;" />
+            <col style="width:20px;" />
+            <col style="width:20px;" />
             @if (applyButtonPosition.DisplayApplyButtonAtEnd() || (editButtonPosition.DisplayEditButtonAtEnd() && editTrigger == TableEditTrigger.EditButton))
             {
                 <col style="width:50px;" />
@@ -33,16 +33,16 @@
         <HeaderContent>
             <MudTh Style="width: 40px;"><MudTableSortLabel SortBy="new Func<Job, object>(x => x.Id)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Job, object>(x => x.JobTitle!)" Class="compact-sort-label">Job Title</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MinSalary)" Class="compact-sort-label">Min Salary</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MaxSalary)" Class="compact-sort-label">Max Salary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MinSalary!)" Class="compact-sort-label">Min Salary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MaxSalary!)" Class="compact-sort-label">Max Salary</MudTableSortLabel></MudTh>
             <MudTh>Delete?</MudTh>
         </HeaderContent>
 
         <RowTemplate>
             <MudTd Style="width: 40px;" DataLabel="Id">@context!.Id</MudTd>
             <MudTd DataLabel="Job Title">@context!.JobTitle</MudTd>
-            <MudTd DataLabel="Min Salary">@context.MinSalary</MudTd>
-            <MudTd DataLabel="Max Salary">@context.MaxSalary</MudTd>
+            <MudTd DataLabel="Min Salary">@context!.MinSalary</MudTd>
+            <MudTd DataLabel="Max Salary">@context!.MaxSalary</MudTd>
             <MudTd DataLabel="Actions">
                 <MudButton OnClick="async () => await DeleteJob(context!)"
                            Color="Color.Default"
@@ -54,7 +54,7 @@
         <RowEditingTemplate>
             <MudTd DataLabel="Id">@context!.Id</MudTd>
             <MudTd DataLabel="JobTitle">
-                <MudTextField @bind-Value="context!.JobTitle" />
+                <MudTextField @bind-Value="context!.JobTitle" Required />
             </MudTd>
             <MudTd DataLabel="MinSalary">
                 <MudNumericField @bind-Value="context!.MinSalary" Min="0" />

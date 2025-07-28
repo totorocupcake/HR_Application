@@ -1,10 +1,11 @@
 ﻿namespace HR_Application;
+using HR_Application.Models;
 using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Reflection;
-using HR_Application.Models;
+using static MudBlazor.CategoryTypes;
 
 public class OracleDataService
 {
@@ -15,7 +16,35 @@ public class OracleDataService
          _connectionString = configuration.GetConnectionString("OracleConnection");
     }
 
+    public async Task<string?> IdentifyJobs(string JobId)
+    {
+        using (var connection = new OracleConnection(_connectionString))
+        {
+            await connection.OpenAsync();
 
+            string query = "SELECT job_title FROM hr_jobs WHERE UPPER(job_id) = UPPER(:jobId)";
+
+            using (var command = new OracleCommand(query, connection))
+            {
+              
+                command.Parameters.Add(":jobId", OracleDbType.Varchar2).Value = JobId;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                    
+                        return reader.GetString(0);
+                    }
+                    else
+                    {
+                    
+                        return null; 
+                    }
+                }
+            }
+        }
+    }
     public async Task<List<Dictionary<string, object?>>> GetData(int type)
     {
         var tableMap = new Dictionary<int, string>
@@ -370,8 +399,74 @@ public class OracleDataService
 
     public async Task UpdateJobAsync(string id, string jobTitle, int? minSalary, int? maxSalary)
     {
-        await Task.CompletedTask;
+        using var connection = new OracleConnection(_connectionString);
+
+        try
+        {
+            await connection.OpenAsync();
+
+            using var command = new OracleCommand("Jobs_update_sp", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add parameters with proper null handling
+            command.Parameters.Add(new OracleParameter("JOB_ID", OracleDbType.Varchar2)).Value = id;
+            command.Parameters.Add(new OracleParameter("JOB_TITLE", OracleDbType.Varchar2)).Value = jobTitle;
+            command.Parameters.Add(new OracleParameter("MIN_SALARY", OracleDbType.Int32)).Value = minSalary ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("MAX_SALARY", OracleDbType.Int32)).Value = maxSalary ?? (object)DBNull.Value;
+
+            await command.ExecuteNonQueryAsync();
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
     }
+
+    public async Task<bool> addJobAsync(string jobId, string jobTitle, int? minSalary, int? maxSalary)
+    {
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new OracleCommand("new_job ", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add parameters with proper null handling
+            command.Parameters.Add(new OracleParameter("JOB_ID", OracleDbType.Varchar2)).Value = jobId;
+            command.Parameters.Add(new OracleParameter("JOB_TITLE", OracleDbType.Varchar2)).Value = jobTitle;
+            command.Parameters.Add(new OracleParameter("MIN_SALARY", OracleDbType.Int32)).Value = minSalary ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("MAX_SALARY", OracleDbType.Int32)).Value = maxSalary ?? (object)DBNull.Value;
+
+            await command.ExecuteNonQueryAsync();
+
+            return true;
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
+    }
+
+
 }
 
 

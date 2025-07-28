@@ -1,7 +1,88 @@
 ﻿@page "/identifyJob"
 
-<h3>IdentifyJob</h3>
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using HR_Application.Models
+
+@inject OracleDataService OracleDataService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h6" Class="mb-6">Identify Job Description</MudText>
+    <MudPaper Class="pa-6" Elevation="3">
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid>
+                <MudItem xs="12" md="12">
+                    <MudTextField T="string" Label="Job ID" @bind-Value="JobId" Required="true" RequiredError="Job ID is required!" />
+                </MudItem>
+
+                <MudItem xs="12" Class="mt-6 d-flex justify-end">
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form!.ResetAsync())" Class="mr-2">Reset</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" OnClick="IdentifyJobs">Identify Job</MudButton>
+                </MudItem>
+
+            </MudGrid>
+        </MudForm>
+
+        @if (!string.IsNullOrEmpty(JobTitle))
+        {
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6">Job Description Found: @JobTitle</MudText>
+        }
+        else if (JobId != null && string.IsNullOrEmpty(JobTitle) && hasSearched)
+        {
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.body1" Color="Color.Error">No job found with ID: @JobId</MudText>
+        }
+
+
+
+    </MudPaper>
+</MudContainer>
 
 @code {
+    bool success;
+    string[] errors = { };
+    MudForm? form;
+    public string? JobId { get; set; }
+    public string? JobTitle { get; set; }
+    private bool hasSearched = false;
+
+    private async Task IdentifyJobs ()
+    {
+
+        await form!.Validate();
+
+        if (!success)
+        {
+            Snackbar.Add("Please fix validation errors", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            JobTitle = await OracleDataService.IdentifyJobs(JobId!);
+            hasSearched = true;
+
+            if (string.IsNullOrEmpty(JobTitle))
+            {
+                Snackbar.Add("No job found with the specified ID", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add("Job identified successfully", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error identifying job: {ex.Message}", Severity.Error);
+        }
+    }
+    }
+           
+    
+
 
 }
