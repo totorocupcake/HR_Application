@@ -19,101 +19,140 @@
 /* FORCE FIXED TABLE LAYOUT - This is the key fix */
 .mud-table table {
     table-layout: fixed !important;
-    width: 80% !important;
+    width: 100% !important;
 }
 
 /* DEFINE SPECIFIC COLUMN WIDTHS */
-.mud-table-header-cell:nth-child(1), /* Employee ID */
-.mud-table-cell:nth-child(1) {
+.employees-table .mud-table-header-cell:nth-child(1), /* Employee ID */
+.employees-table .mud-table-cell:nth-child(1) {
     width: 90px !important;
     min-width: 90px !important;
     max-width: 90px !important;
 }
 
-.mud-table-header-cell:nth-child(2), /* First Name */
-.mud-table-cell:nth-child(2) {
+.employees-table .mud-table-header-cell:nth-child(2), /* First Name */
+.employees-table .mud-table-cell:nth-child(2) {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+}
+
+.employees-table .mud-table-header-cell:nth-child(3), /* Last Name */
+.employees-table .mud-table-cell:nth-child(3) {
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
 }
 
-.mud-table-header-cell:nth-child(3), /* Last Name */
-.mud-table-cell:nth-child(3) {
+.employees-table .mud-table-header-cell:nth-child(4), /* Email */
+.employees-table .mud-table-cell:nth-child(4) {
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
 }
 
-.mud-table-header-cell:nth-child(4), /* Email */
-.mud-table-cell:nth-child(4) {
-    width: 100px !important;
-    min-width: 100px !important;
-    max-width: 100px !important;
-}
-
-.mud-table-header-cell:nth-child(5), /* Phone Number */
-.mud-table-cell:nth-child(5) {
+.employees-table .mud-table-header-cell:nth-child(5), /* Phone Number */
+.employees-table .mud-table-cell:nth-child(5) {
     width: 150px !important;
     min-width: 150px !important;
     max-width: 150px !important;
 }
 
-.mud-table-header-cell:nth-child(6), /* Hire Date */
-.mud-table-cell:nth-child(6) {
+.employees-table .mud-table-header-cell:nth-child(6), /* Hire Date */
+.employees-table .mud-table-cell:nth-child(6) {
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
 }
 
-.mud-table-header-cell:nth-child(7), /* Job ID */
-.mud-table-cell:nth-child(7) {
+.employees-table .mud-table-header-cell:nth-child(7), /* Job ID */
+.employees-table .mud-table-cell:nth-child(7) {
     width: 90px !important;
     min-width: 90px !important;
     max-width: 90px !important;
 }
 
-.mud-table-header-cell:nth-child(8), /* Salary */
-.mud-table-cell:nth-child(8) {
+.employees-table .mud-table-header-cell:nth-child(8), /* Salary */
+.employees-table .mud-table-cell:nth-child(8) {
     width: 90px !important;
     min-width: 90px !important;
     max-width: 90px !important;
 }
 
-.mud-table-header-cell:nth-child(9), /* Commission */
-.mud-table-cell:nth-child(9) {
+.employees-table .mud-table-header-cell:nth-child(9), /* Commission */
+.employees-table .mud-table-cell:nth-child(9) {
     width: 110px !important;
     min-width: 110px !important;
     max-width: 110px !important;
 }
 
-.mud-table-header-cell:nth-child(10), /* Manager ID */
-.mud-table-cell:nth-child(10) {
+.employees-table .mud-table-header-cell:nth-child(10), /* Manager ID */
+.employees-table .mud-table-cell:nth-child(10) {
     width: 90px !important;
     min-width: 90px !important;
     max-width: 90px !important;
 }
 
-.mud-table-header-cell:nth-child(11), /* Department ID */
-.mud-table-cell:nth-child(11) {
+.employees-table .mud-table-header-cell:nth-child(11), /* Department ID */
+.employees-table .mud-table-cell:nth-child(11) {
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
 }
 
-.mud-table-header-cell:nth-child(12), /* Delete button */
-.mud-table-cell:nth-child(12) {
+.employees-table .mud-table-header-cell:nth-child(12), /* Delete button */
+.employees-table .mud-table-cell:nth-child(12) {
     width: 60px !important;
     min-width: 60px !important;
     max-width: 60px !important;
 }
 
-.mud-table-header-cell:nth-child(13), /* Delete button */
-.mud-table-cell:nth-child(13) {
+.employees-table .mud-table-header-cell:nth-child(13), /* Delete button */
+.employees-table .mud-table-cell:nth-child(13) {
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
 }
+.jobs-table .mud-table-header-cell:nth-child(1), /* Job ID */
+.jobs-table .mud-table-cell:nth-child(1) {
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+}
 
+.jobs-table .mud-table-header-cell:nth-child(2), /* Job Title */
+.jobs-table .mud-table-cell:nth-child(2) {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.jobs-table .mud-table-header-cell:nth-child(3), /* Min Salary */
+.jobs-table .mud-table-cell:nth-child(3) {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+}
+
+.jobs-table .mud-table-header-cell:nth-child(4), /* Max Salary */
+.jobs-table .mud-table-cell:nth-child(4) {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+}
+
+.jobs-table .mud-table-header-cell:nth-child(5), /* Delete */
+.jobs-table .mud-table-cell:nth-child(5) {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+}
+.jobs-table .mud-table-header-cell:nth-child(6),
+.jobs-table .mud-table-cell:nth-child(6) {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+}
 
     /* EXTRA OVERRIDES FOR OLDER BROWSERS */
     .mud-table-cell, .mud-table-header {

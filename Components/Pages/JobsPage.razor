@@ -6,6 +6,7 @@
 
 @inject OracleDataService OracleDataService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <h3></h3>
 @if (Jobs == null)
@@ -16,8 +17,8 @@
 else
 {
 
-<div style=" display: flex; flex-direction: column; width:80%">
-    <MudTable @ref="tableRef" Class="compact-table" Items="@Jobs" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
+<div style=" display: flex; flex-direction: column; width:70%">
+    <MudTable @ref="tableRef" Class="jobs-table" Items="@Jobs" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
               RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading
               RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
@@ -26,33 +27,21 @@ else
             <MudSpacer />
             <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
-        <ColGroup>
-            <col style="width:15px;" />
-            <col style="width:30px;" />
-            <col style="width:10px;" />
-            <col style="width:10px;" />
-            <col style="width:5px;" />
-            @if (applyButtonPosition.DisplayApplyButtonAtEnd() || (editButtonPosition.DisplayEditButtonAtEnd() && editTrigger == TableEditTrigger.EditButton))
-            {
-                <col style="width:10px;" />
-            }
-        </ColGroup>
-
+       
         <HeaderContent>
-            <MudTh Style="width: 40px;"><MudTableSortLabel SortBy="new Func<Job, object>(x => x.Id)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Job, object>(x => x.JobTitle!)" Class="compact-sort-label">Job Title</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.Id)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Job, object>(x => x.JobTitle!)" Class="compact-sort-label">Job Title</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MinSalary!)" Class="compact-sort-label">Min Salary</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Job, object>(x => x.MaxSalary!)" Class="compact-sort-label">Max Salary</MudTableSortLabel></MudTh>
             <MudTh>Delete?</MudTh>
         </HeaderContent>
-
         <RowTemplate>
-            <MudTd Style="width: 40px;" DataLabel="Id">@context!.Id</MudTd>
+            <MudTd DataLabel="Id">@context!.Id</MudTd>
             <MudTd DataLabel="Job Title">@context!.JobTitle</MudTd>
             <MudTd DataLabel="Min Salary">@context!.MinSalary</MudTd>
             <MudTd DataLabel="Max Salary">@context!.MaxSalary</MudTd>
-            <MudTd DataLabel="Actions">
-                <MudButton OnClick="async () => await DeleteJob(context!)"
+                <MudTd DataLabel="Actions">
+                    <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
                            Color="Color.Default"
                            StartIcon="@Icons.Material.Filled.Delete">
                 </MudButton>
@@ -71,7 +60,7 @@ else
                 <MudNumericField @bind-Value="context!.MaxSalary" Min="0" />
             </MudTd>
             <MudTd DataLabel="Actions">
-                <MudButton OnClick="async () => await DeleteJob(context!)"
+                    <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
                            Color="Color.Default"
                            StartIcon="@Icons.Material.Filled.Delete">
                 </MudButton>
@@ -102,8 +91,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Jobs = await OracleDataService.GetDataForModels<Job>(1);
+        try
+        {
+            Jobs = await OracleDataService.GetDataForModels<Job>(1);
+        }
+        catch (Exception)
+        {
+            Snackbar?.Add("Failed to load data. Please try again later.", Severity.Error);
+        }
+        finally{
         loading = false;
+        }
     }
 
     private void ClearEventLog()
@@ -200,6 +198,31 @@ else
             Snackbar.Add($"Error deleting job: {ex.Message}", Severity.Error);
         }
     }
+
+    private async Task ConfirmDeletionAsync(Job job)
+    {
+        var parameters = new DialogParameters<Dialog>
+        {
+            { x => x.ContentText, "Do you really want to delete this record? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true
+        };
+        var dialogReference = await DialogService.ShowAsync<Dialog>("Delete Confirmation", parameters, options);
+
+        var result = await dialogReference.Result;
+
+        if (!result!.Canceled)
+        {
+            await DeleteJob(job);
+        }
+    }
+
 
 }
 

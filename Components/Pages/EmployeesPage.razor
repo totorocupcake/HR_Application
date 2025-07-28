@@ -6,6 +6,7 @@
 
 @inject OracleDataService OracleDataService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <h3></h3>
 @if (Employees == null)
@@ -16,7 +17,7 @@
 else
 {
    
-    <MudTable @ref="tableRef" Class="compact-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
+    <MudTable @ref="tableRef" Class="employees-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
               RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading 
           RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
@@ -55,7 +56,7 @@ else
         <MudTd DataLabel="Manager Id">@context!.ManagerId</MudTd>
         <MudTd DataLabel="Department Id">@context!.DepartmentId</MudTd>
         <MudTd  DataLabel="Actions">
-            <MudButton OnClick="async () => await DeleteEmployee(context!)"
+                <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
                        Color="Color.Default"
                        StartIcon="@Icons.Material.Filled.Delete">
             </MudButton>
@@ -93,7 +94,7 @@ else
                 @context!.DepartmentId
             </MudTd>
             <MudTd DataLabel="Actions">
-                <MudButton OnClick="async () => await DeleteEmployee(context!)"
+                <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
                            Color="Color.Default"
                            StartIcon="@Icons.Material.Filled.Delete"
                            Size="Size.Small">
@@ -121,8 +122,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Employees = await OracleDataService.GetDataForModels<Employee>(0);
-        loading = false;
+        try
+        {
+            Employees = await OracleDataService.GetDataForModels<Employee>(0);
+        }
+        catch (Exception)
+        {
+            Snackbar?.Add("Failed to load data. Please try again later.", Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
     }
 
     private void ClearEventLog()
@@ -239,6 +250,32 @@ else
             Snackbar.Add($"Error deleting employee: {ex.Message}", Severity.Error);
         }
     }
+
+    private async Task ConfirmDeletionAsync(Employee employee)
+    {
+        var parameters = new DialogParameters<Dialog>
+        {
+            { x => x.ContentText, "Do you really want to delete this record? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true
+        };
+        var dialogReference = await DialogService.ShowAsync<Dialog>("Delete Confirmation", parameters, options);
+
+        var result = await dialogReference.Result;
+
+        if (!result!.Canceled)
+        {
+            await DeleteEmployee(employee);
+        }
+    }
+
+
 
 }
 
