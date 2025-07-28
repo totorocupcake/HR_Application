@@ -40,7 +40,7 @@
                 </MudItem>
 
                 <MudItem xs="12" md="6">
-                    <MudDatePicker Label="Hire Date" Editable="true" @bind-Date="HireDate" Placeholder="Select Date" Required="true" />
+                    <MudDatePicker Label="Hire Date" Editable="true" @bind-Date="HireDate" Placeholder="Select Date" Required="true" RequiredError="Hire Date is required!" />
                 </MudItem>
 
                 <MudItem xs="12" md="6">
@@ -48,7 +48,7 @@
                 </MudItem>
 
                 <MudItem xs="12" md="6">
-                    <MudSelect @bind-Value="Job" T="JobDropdownItem" Label="Job" Placeholder="Please Select" Required="true">
+                    <MudSelect @bind-Value="Job" T="JobDropdownItem" Label="Job" Placeholder="Please Select" Required="true" RequiredError="Job ID is required!">
                         @if (jobs == null)
                          {
                             <MudSelectItem T="JobDropdownItem" Disabled="true">Loading jobs...</MudSelectItem>
@@ -121,7 +121,7 @@
                 <MudItem xs="12" Class="mt-6 d-flex justify-end">
                
                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form!.ResetAsync())" Class="mr-2">Reset</MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" OnClick="AddEmployee">Add Employee</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="AddEmployee">Add Employee</MudButton>
                
                 </MudItem>
             </MudGrid>
