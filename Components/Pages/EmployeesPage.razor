@@ -16,7 +16,7 @@
 
 else
 {
-   
+
     <MudTable @ref="tableRef" Class="employees-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
               @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
               RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading 
@@ -49,7 +49,7 @@ else
         <MudTd DataLabel="Last Name">@context!.LastName</MudTd>
         <MudTd DataLabel="Email">@context!.Email</MudTd>
         <MudTd DataLabel="Phone Number">@context!.PhoneNumber</MudTd>
-        <MudTd DataLabel="Hire Date">@context!.HireDate</MudTd>
+            <MudTd DataLabel="Hire Date">@context!.HireDate.ToString("d")</MudTd>
         <MudTd DataLabel="Job Id">@context!.JobId</MudTd>
         <MudTd DataLabel="Salary">@context!.Salary</MudTd>
         <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))</MudTd>
@@ -77,12 +77,12 @@ else
             <MudTd DataLabel="Phone Number">
                 <MudTextField @bind-Value="context!.PhoneNumber" Variant="Variant.Text" Margin="Margin.None" />
             </MudTd>
-            <MudTd DataLabel="Hire Date">@context!.HireDate</MudTd>
+            <MudTd DataLabel="Hire Date">@context!.HireDate.ToString("d")</MudTd>
             <MudTd DataLabel="Job Id">
                 @context!.JobId
             </MudTd>
             <MudTd DataLabel="Salary">
-                <MudNumericField @bind-Value="context!.Salary" Min="0" Variant="Variant.Text" Margin="Margin.None" />
+                <MudNumericField @bind-Value="context!.Salary" Min="0" Step="100" Variant="Variant.Text" Margin="Margin.None" />
             </MudTd>
             <MudTd DataLabel="Commission Pct">
                 @(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))
