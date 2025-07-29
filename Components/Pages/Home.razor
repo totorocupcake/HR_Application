@@ -2,6 +2,57 @@
 
 <PageTitle>HR Application</PageTitle>
 
-<h1>Hello, world!</h1>
+<!-- Hero Section with subtle background -->
+<MudPaper Elevation="0" Class="pa-8 text-center" Style="background: linear-gradient(135deg, #1A2A6C, #B21F1F, #1A2A6C); color: white;">
+    <MudText Typo="Typo.h2" Class="text-white">Welcome to HR Application</MudText>
+    <MudText Typo="Typo.h6" Class="mt-4 text-white opacity-90" MaxWidth="700px" Margin="Margin.Auto">
+        Streamline employee, jobs and department management — all in one place.
+    </MudText>
+</MudPaper>
 
-Welcome to your new app.
+<!-- Features Section -->
+<MudPaper Elevation="0" Class="pa-8">
+    <MudText Typo="Typo.h4" Class="text-center mb-8">Key Features</MudText>
+
+    <MudGrid Justify="Justify.Center" Spacing="6">
+        <!-- Feature 1 -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="4" Class="pa-4 text-center" Outlined="true">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" Color="Color.Primary" Class="mx-auto d-block" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Employee Management</MudText>
+                    <MudText Class="mt-2">Add, view, and manage employee records with ease.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Feature 2 -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="4" Class="pa-4 text-center" Outlined="true">
+                <MudIcon Icon="@Icons.Material.Filled.Work" Size="Size.Large" Color="Color.Secondary" Class="mx-auto d-block" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Job Management</MudText>
+                    <MudText Class="mt-2">Add, view and lookup job codes in a matter of seconds.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Feature 3 -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="4" Class="pa-4 text-center" Outlined="true">
+                <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large" Color="Color.Tertiary" Class="mx-auto d-block" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Departments</MudText>
+                    <MudText Class="mt-2">Manage departments.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<!-- Call to Action Banner -->
+<MudPaper Elevation="1" Class="pa-6 mt-4 text-center" Style="background-color: #f5f9ff;">
+    <MudText Typo="Typo.h5">Ready to get started?</MudText>
+    <MudText Class="mt-2">Select one of the menu items on the left.</MudText>
+    
+</MudPaper>
