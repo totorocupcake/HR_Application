@@ -1,0 +1,66 @@
+﻿@page "/about"
+@using MudBlazor
+
+<PageTitle>About Us</PageTitle>
+
+<MudPaper Elevation="2" Class="pa-6 mt-8 mx-auto" Style="max-width: 1000px;">
+
+    <MudText Typo="Typo.h3" Class="text-center mb-8">About Our Team</MudText>
+
+    <MudGrid Justify="Justify.Center" Spacing="6">
+
+        <!-- Developer 1 -->
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Elevation="4" Class="pa-4 text-center">
+                <MudAvatar Size="Size.Large" Class="mx-auto my-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                </MudAvatar>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">John St. Pierre</MudText>
+                    <MudText Color="Color.Tertiary" Class="mb-3">Lead Back-End Developer</MudText>
+                    <MudDivider Class="my-3" />
+                    <MudText Class="text-justify">
+                        John is a dedicated back-end developer with a strong focus on database design and integration.
+                        He ensures seamless connectivity and performance between the application and the Oracle Database.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions Class="justify-center pb-4">
+                    <MudButton StartIcon="@Icons.Material.Filled.Email" Variant="Variant.Text" Color="Color.Primary"
+                               Href="mailto:john.stpierre@torontomu.ca">Email</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <!-- Developer 2 -->
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Elevation="4" Class="pa-4 text-center">
+                <MudAvatar Size="Size.Large" Class="mx-auto my-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                </MudAvatar>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">Katie Lai</MudText>
+                    <MudText Color="Color.Tertiary" Class="mb-3">Frontend Developer</MudText>
+                    <MudDivider Class="my-3" />
+                    <MudText Class="text-justify">
+                        Katie specializes in crafting intuitive and responsive user interfaces using Blazor and MudBlazor.
+                        Her focus is on delivering a smooth and engaging user experience.
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions Class="justify-center pb-4">
+                    <MudButton StartIcon="@Icons.Material.Filled.Email" Variant="Variant.Text" Color="Color.Primary"
+                               Href="mailto:katie.lai@torontomu.ca">Email</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Code" Variant="Variant.Text" Color="Color.Primary"
+                               Href="https://github.com/totorocupcake" Target="_blank">GitHub</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+
+    <!-- Final summary sentence -->
+    <MudText Typo="Typo.body1" Class="text-center mt-8">
+        Together, we combine modern frontend technologies with robust backend systems,
+        building dynamic web applications powered by Blazor, MudBlazor, and Oracle SQL Database.
+    </MudText>
+
+</MudPaper>
