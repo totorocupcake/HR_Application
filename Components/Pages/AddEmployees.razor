@@ -158,6 +158,7 @@
         {
             // Handle error (show message, etc.)
             Console.WriteLine($"Error loading jobs: {ex.Message}");
+            Snackbar?.Add("Failed to load data. Please try again later.", Severity.Error);
         }
     }
 

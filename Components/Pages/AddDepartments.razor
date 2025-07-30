@@ -1,0 +1,166 @@
+﻿@page "/addDepartment"
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using HR_Application.Models
+
+@inject OracleDataService OracleDataService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h6" Class="mb-6">Add New Department</MudText>
+    <MudPaper Class="pa-6" Elevation="3">
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid>
+                <MudItem xs="12" md="12">
+                    <MudTextField T="int" Label="Department ID" @bind-Value="Id" Required="true" RequiredError="Department ID is required!" />
+                </MudItem>
+
+                <MudItem xs="12" md="12">
+                    <MudTextField T="string" Label="Department Name" @bind-Value="departmentName" Required="true" RequiredError="Department Name is required!" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="managerSelected" T="ManagerDropDownItem" Label="Manager" Placeholder="Please Select" ToStringFunc="@(m => m == null ? "None" : $"{m.FirstName} {m.LastName}")">
+
+                        <MudSelectItem T="ManagerDropDownItem" Value="@null">None</MudSelectItem>
+
+                        @if (managers == null)
+                        {
+                            <MudSelectItem T="ManagerDropDownItem" Disabled="true">Loading managers...</MudSelectItem>
+                        }
+                        else if (!managers.Any())
+                        {
+                            <MudSelectItem T="ManagerDropDownItem" Disabled="true">No managers available</MudSelectItem>
+                        }
+                        else
+                        {
+
+                            @foreach (var manager in managers)
+                            {
+                                <MudSelectItem value="@managerSelected">
+                                    @manager?.FirstName @manager?.LastName (@manager?.ManagerId)
+                                </MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="locationSelected" T="LocationDropDownItem" Label="Location" Placeholder="Please Select">
+                        @if (locations == null)
+                        {
+                            <MudSelectItem T="LocationDropDownItem" Disabled="true">Loading locations...</MudSelectItem>
+                        }
+                        else if (!locations.Any())
+                        {
+                            <MudSelectItem T="LocationDropDownItem" Disabled="true">No jobs available</MudSelectItem>
+                        }
+                        else
+                        {
+                            @foreach (var location in locations)
+                            {
+                                <MudSelectItem Value="location">
+                                    @{
+                                        var parts = new List<string>();
+
+                                        if (!string.IsNullOrWhiteSpace(location?.StreetAddress))
+                                            parts.Add(location.StreetAddress);
+
+                                        if (!string.IsNullOrWhiteSpace(location?.PostalCode))
+                                            parts.Add(location.PostalCode);
+
+                                        if (!string.IsNullOrWhiteSpace(location?.City))
+                                            parts.Add(location.City);
+
+                                        if (!string.IsNullOrWhiteSpace(location?.StateProvince))
+                                            parts.Add(location.StateProvince);
+
+                                        if (!string.IsNullOrWhiteSpace(location?.Country))
+                                            parts.Add(location.Country);
+
+                                        if (location?.LocationId != null)
+                                            parts.Add($"({location.LocationId})");
+                                    }
+
+                                    @string.Join(", ", parts)
+                                </MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+                
+
+                <MudItem xs="12" Class="mt-6 d-flex justify-end">
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DropShadow="false" OnClick="@(() => form!.ResetAsync())" Class="mr-2">Reset</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="AddDepartment">Add Department</MudButton>
+
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    bool success;
+    string[] errors = { };
+    MudForm? form;
+    public int Id { get; set; }
+    public string? departmentName { get; set; }
+    private List<ManagerDropDownItem>? managers;
+    private List<LocationDropDownItem>? locations;
+    public ManagerDropDownItem? managerSelected { get; set; }
+    public LocationDropDownItem? locationSelected { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            managers = await OracleDataService.GetManagersForDropDown();
+            locations = await OracleDataService.GetLocationsForDropDown();
+     
+        }
+        catch (Exception ex)
+        {
+            // Handle error (show message, etc.)
+            Console.WriteLine($"Error loading data: {ex.Message}");
+            Snackbar?.Add("Failed to load data. Please try again later.", Severity.Error);
+        }
+    }
+
+
+
+    private async Task AddDepartment()
+    {
+
+        await form!.Validate();
+
+        if (!success)
+        {
+            Snackbar.Add("Please fix validation errors", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+
+            var result = await OracleDataService.addDepartmentAsync(
+                Id, departmentName!, managerSelected?.ManagerId, locationSelected?.LocationId
+            );
+
+            if (result)
+            {
+                Snackbar.Add("Department added successfully!", Severity.Success);
+                await form.ResetAsync();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+}

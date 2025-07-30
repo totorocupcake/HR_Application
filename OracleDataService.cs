@@ -531,9 +531,77 @@ public class OracleDataService
         return rowsAffected > 0;
     }
 
+    public async Task<List<LocationDropDownItem>> GetLocationsForDropDown()
+    {
+        var managers = new List<LocationDropDownItem>();
 
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
 
+            string query = "SELECT DISTINCT * from hr_locations";
 
+            using var command = new OracleCommand(query, connection);
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                managers.Add(new LocationDropDownItem
+                {
+                    LocationId = Convert.ToInt32(reader["location_id"]),
+                    StreetAddress = $"{reader["street_address"]}",
+                    PostalCode = $"{reader["postal_code"]}",
+                    City = $"{reader["city"]}",
+                    StateProvince = $"{reader["state_province"]}",
+                    Country = $"{reader["country_id"]}",
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error here
+            Console.WriteLine($"Error fetching locations: {ex.Message}");
+            throw; // Re-throw if you want calling code to handle it
+        }
+
+        return managers;
+    }
+
+    public async Task<bool> addDepartmentAsync(int departmentId, string departmentName, int? managerId, int? locationId)
+    {
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var command = new OracleCommand("new_job ", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add parameters with proper null handling
+            command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int32)).Value = departmentId;
+            command.Parameters.Add(new OracleParameter("DEPARTMENT_NAME", OracleDbType.Varchar2)).Value = departmentName;
+            command.Parameters.Add(new OracleParameter("MANAGER_ID", OracleDbType.Int32)).Value = managerId ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("LOCATION_ID", OracleDbType.Int32)).Value = locationId ?? (object)DBNull.Value;
+
+            await command.ExecuteNonQueryAsync();
+
+            return true;
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
+    }
 }
 
 
