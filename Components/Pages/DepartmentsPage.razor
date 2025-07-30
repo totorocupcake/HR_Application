@@ -53,10 +53,10 @@ else
                 <MudTextField @bind-Value="context!.DepartmentName" Required Variant="Variant.Text" Margin="Margin.None" />
             </MudTd>
             <MudTd DataLabel="Manager ID">
-                @context!.ManagerId
+                        <MudTextField @bind-Value="context!.ManagerId" Variant="Variant.Text" Margin="Margin.None" />
             </MudTd>
             <MudTd DataLabel="Location ID">
-                @context!.LocationId
+                    <MudTextField @bind-Value="context!.LocationId"  Variant="Variant.Text" Margin="Margin.None" />
             </MudTd>
             <MudTd DataLabel="Actions">
                 <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
@@ -174,6 +174,9 @@ else
         }
         catch (Exception ex)
         {
+            // Refresh the data to revert UI changes
+            Departments = await OracleDataService.GetDataForModels<Department>(2);
+            StateHasChanged();
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }

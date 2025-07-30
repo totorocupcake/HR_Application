@@ -14,10 +14,6 @@
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
             <MudGrid>
                 <MudItem xs="12" md="12">
-                    <MudTextField T="int" Label="Department ID" @bind-Value="Id" Required="true" RequiredError="Department ID is required!" />
-                </MudItem>
-
-                <MudItem xs="12" md="12">
                     <MudTextField T="string" Label="Department Name" @bind-Value="departmentName" Required="true" RequiredError="Department Name is required!" />
                 </MudItem>
 
@@ -110,7 +106,6 @@
     bool success;
     string[] errors = { };
     MudForm? form;
-    public int Id { get; set; }
     public string? departmentName { get; set; }
     private List<ManagerDropDownItem>? managers;
     private List<LocationDropDownItem>? locations;
@@ -150,7 +145,7 @@
         {
 
             var result = await OracleDataService.addDepartmentAsync(
-                Id, departmentName!, managerSelected?.ManagerId, locationSelected?.LocationId
+                departmentName!, managerSelected?.ManagerId, locationSelected?.LocationId
             );
 
             if (result)

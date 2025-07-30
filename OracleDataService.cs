@@ -487,7 +487,7 @@ public class OracleDataService
         {
             await connection.OpenAsync();
 
-            using var command = new OracleCommand("Jobs_update_sp", connection)
+            using var command = new OracleCommand("Department_update_all_sp", connection)
             {
                 CommandType = CommandType.StoredProcedure
             };
@@ -516,19 +516,34 @@ public class OracleDataService
 
     public async Task<bool> DeleteDepartmentAsync(int departmentId)
     {
-        using var connection = new OracleConnection(_connectionString);
-        await connection.OpenAsync();
+        try
+        {
+            using var connection = new OracleConnection(_connectionString);
+            await connection.OpenAsync();
 
-        // Use parameterized query to prevent SQL injection
-        const string query = "DELETE FROM hr_departments WHERE department_id = :department_id";
 
-        using var command = new OracleCommand(query, connection);
-        command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int32)).Value = departmentId;
+            using var command = new OracleCommand("Department_delete_no_check_sp", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
-        int rowsAffected = await command.ExecuteNonQueryAsync();
+            command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int32)).Value = departmentId;
 
-        // Return true if at least one row was deleted
-        return rowsAffected > 0;
+            await command.ExecuteNonQueryAsync();
+
+            return true;
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task<List<LocationDropDownItem>> GetLocationsForDropDown()
@@ -568,20 +583,19 @@ public class OracleDataService
         return managers;
     }
 
-    public async Task<bool> addDepartmentAsync(int departmentId, string departmentName, int? managerId, int? locationId)
+    public async Task<bool> addDepartmentAsync(string departmentName, int? managerId, int? locationId)
     {
         try
         {
             using var connection = new OracleConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new OracleCommand("new_job ", connection)
+            using var command = new OracleCommand("Department_insert_sp", connection)
             {
                 CommandType = CommandType.StoredProcedure
             };
 
             // Add parameters with proper null handling
-            command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int32)).Value = departmentId;
             command.Parameters.Add(new OracleParameter("DEPARTMENT_NAME", OracleDbType.Varchar2)).Value = departmentName;
             command.Parameters.Add(new OracleParameter("MANAGER_ID", OracleDbType.Int32)).Value = managerId ?? (object)DBNull.Value;
             command.Parameters.Add(new OracleParameter("LOCATION_ID", OracleDbType.Int32)).Value = locationId ?? (object)DBNull.Value;

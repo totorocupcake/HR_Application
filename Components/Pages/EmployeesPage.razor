@@ -226,6 +226,9 @@ else
         }
         catch (Exception ex)
         {
+            // Refresh the data to revert UI changes
+            Employees = await OracleDataService.GetDataForModels<Employee>(0);
+            StateHasChanged();
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }

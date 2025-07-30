@@ -12,7 +12,6 @@ namespace HR_Application
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
-            builder.Services.AddSingleton<Test>();
             builder.Services.AddScoped<OracleDataService>();
             builder.Services.AddMudServices();
 
