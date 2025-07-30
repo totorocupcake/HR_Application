@@ -4,5 +4,5 @@ Installation Guide
 2. Download github repository.
 3. Update app.cs file within downloaded github files with your TMU oracle database credentials.
 4. Open downloaded github repository location in a Terminal.
-5. Type command dotnot run
+5. Type command dotnet run
 6. Navigate to localhost url displayed on the terminal to see the website hosted on localhost.
