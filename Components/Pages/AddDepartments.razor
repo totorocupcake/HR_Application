@@ -39,7 +39,7 @@
 
                             @foreach (var manager in managers)
                             {
-                                <MudSelectItem value="@managerSelected">
+                                <MudSelectItem value="@manager">
                                     @manager?.FirstName @manager?.LastName (@manager?.ManagerId)
                                 </MudSelectItem>
                             }
@@ -48,7 +48,10 @@
                 </MudItem>
 
                 <MudItem xs="12" md="6">
-                    <MudSelect @bind-Value="locationSelected" T="LocationDropDownItem" Label="Location" Placeholder="Please Select">
+                    <MudSelect @bind-Value="locationSelected" T="LocationDropDownItem" Label="Location" Placeholder="Please Select" ToStringFunc="@(m => m?.ToString() ?? "None")">
+
+                        <MudSelectItem T="LocationDropDownItem" Value="@null">None</MudSelectItem>
+
                         @if (locations == null)
                         {
                             <MudSelectItem T="LocationDropDownItem" Disabled="true">Loading locations...</MudSelectItem>

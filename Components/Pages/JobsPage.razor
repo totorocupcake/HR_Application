@@ -100,7 +100,7 @@ else
             Snackbar?.Add("Failed to load data. Please try again later.", Severity.Error);
         }
         finally{
-        loading = false;
+            loading = false;
         }
     }
 
@@ -134,8 +134,15 @@ else
         AddEditionEvent($"RowEditCommit event: Changes to Element {((Job)element).Id} committed");
 
         // Update the database
-        await UpdateJob(job);
+        try
+        {
 
+            await UpdateJob(job);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 
     private void ResetItemToOriginalValues(object element)
@@ -219,8 +226,15 @@ else
 
         if (!result!.Canceled)
         {
-            await DeleteJob(job);
-        }
+            try
+            {
+                await DeleteJob(job);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+    }
     }
 
 
