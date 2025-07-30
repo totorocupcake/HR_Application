@@ -18,7 +18,11 @@
             <MudNavLink Href="/addJob" Icon="@Icons.Material.Filled.Add">Create New Job</MudNavLink>
             <MudNavLink Href="/identifyJob" Icon="@Icons.Material.Filled.Search">Identify Job Desc</MudNavLink>
         </MudNavGroup>
-        <MudNavLink Href="/departments" Icon="@Icons.Material.Filled.Groups">Departments</MudNavLink>
+
+        <MudNavGroup Title="Departments" Icon="@Icons.Material.Filled.Groups" Expanded="false">
+            <MudNavLink Href="/departments" Icon="@Icons.Material.Filled.Edit">View/Edit Departments</MudNavLink>
+            <MudNavLink Href="/addDepartments" Icon="@Icons.Material.Filled.Add">Create New Department</MudNavLink>
+        </MudNavGroup>
     </MudNavMenu>
 </MudPaper>
 

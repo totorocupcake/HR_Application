@@ -1,0 +1,227 @@
+﻿@page "/Departments"
+
+@using System.Net.Http.Json
+@using HR_Application.Models
+@using MudBlazor
+
+@inject OracleDataService OracleDataService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<h3></h3>
+@if (Departments == null)
+{
+    <p><em>Loading...</em></p>
+}
+
+else
+{
+
+    <MudTable @ref="tableRef" Class="departments-table" Items="@Departments" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
+              @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
+              RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading
+              RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6" Class="mb-6">View / Edit Employees</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+
+            <MudTh><MudTableSortLabel SortBy="new Func<Department, object>(x => x.Id)" Class="compact-sort-label">Department ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Department, object>(x => x.DepartmentName)" Class="compact-sort-label">Department Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Department, object>(x => x.ManagerId!)" Class="compact-sort-label">Manager ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Department, object>(x => x.LocationId!)" Class="compact-sort-label">Location ID</MudTableSortLabel></MudTh>
+            <MudTh>Delete?</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Department Id">@context!.Id</MudTd>
+            <MudTd DataLabel="Department Name">@context!.DepartmentName</MudTd>
+            <MudTd DataLabel="Manager ID">@context!.ManagerId</MudTd>
+            <MudTd DataLabel="Location ID">@context!.LocationId</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Delete">
+                </MudButton>
+            </MudTd>
+
+        </RowTemplate>
+        <RowEditingTemplate>
+            <MudTd DataLabel="Department Id">@context!.Id</MudTd>
+            <MudTd DataLabel="Department Name">
+                <MudTextField @bind-Value="context!.DepartmentName" Required Variant="Variant.Text" Margin="Margin.None" />
+            </MudTd>
+            <MudTd DataLabel="Manager ID">
+                @context!.ManagerId
+            </MudTd>
+            <MudTd DataLabel="Location ID">
+                @context!.LocationId
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudButton OnClick="async () => await ConfirmDeletionAsync(context!)"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Delete"
+                           Size="Size.Small">
+                </MudButton>
+            </MudTd>
+        </RowEditingTemplate>
+        <PagerContent>
+            <MudTablePager RowsPerPageString="Records per page" PageSizeOptions="@(new int[] { 20, 50, 100 })" />
+        </PagerContent>
+    </MudTable>
+
+}
+@code {
+    private MudTable<Department>? tableRef;
+    private List<string> editEvents = new();
+    private string searchString = "";
+    private Department? selectedItem1 = null;
+    private Department? elementBeforeEdit;
+    private HashSet<Department> selectedItems1 = new HashSet<Department>();
+    private TableApplyButtonPosition applyButtonPosition = TableApplyButtonPosition.End;
+    private TableEditButtonPosition editButtonPosition = TableEditButtonPosition.End;
+    private TableEditTrigger editTrigger = TableEditTrigger.RowClick;
+    private List<Department> Departments { get; set; } = new List<Department>();
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Departments = await OracleDataService.GetDataForModels<Department>(2);
+        }
+        catch (Exception)
+        {
+            Snackbar?.Add("Failed to load data. Please try again later.", Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+        {
+            Id = ((Department)element).Id,
+            DepartmentName = ((Department)element).DepartmentName,
+            ManagerId = ((Department)element).ManagerId,
+            LocationId = ((Department)element).LocationId
+        };
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((Department)element).Id}");
+    }
+
+    private async Task ItemHasBeenCommitted(object element)
+    {
+        var department = (Department)element;
+
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((Department)element).Id} committed");
+
+        // Update the database
+        await UpdateEmployee(department);
+
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((Department)element).Id = elementBeforeEdit!.Id;
+        ((Department)element).DepartmentName = elementBeforeEdit.DepartmentName;
+        ((Department)element).ManagerId = elementBeforeEdit.ManagerId;
+        ((Department)element).LocationId = elementBeforeEdit.LocationId;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((Department)element).Id} canceled");
+    }
+
+    private bool FilterFunc(Department element)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+
+        var searchLower = searchString.ToLower();
+
+        return
+                 (element.DepartmentName?.ToLower().Contains(searchLower) == true) ||
+                 (element.Id.ToString().Contains(searchLower) == true) ||
+                 (element.ManagerId?.ToString().Contains(searchLower) == true) ||
+                 (element.LocationId?.ToString().Contains(searchLower) == true);
+    }
+
+               
+
+    private async Task UpdateEmployee(Department department)
+    {
+        try
+        {
+            await OracleDataService.UpdateDepartmentAsync(
+                department.Id,
+                department.DepartmentName,
+                department.ManagerId,
+                department.LocationId);
+
+            Snackbar.Add("Department updated successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteDepartment(Department department)
+    {
+        try
+        {
+            await OracleDataService.DeleteDepartmentAsync(department.Id);
+            // Refresh the Employees list after deletion
+            Departments = await OracleDataService.GetDataForModels<Department>(2);
+            StateHasChanged();
+            Snackbar.Add("Department deleted successfully!", Severity.Success);
+
+        }
+        catch (Exception ex)
+        {
+            Departments = await OracleDataService.GetDataForModels<Department>(2);
+            StateHasChanged();
+            Snackbar.Add($"Error deleting department: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ConfirmDeletionAsync(Department department)
+    {
+        var parameters = new DialogParameters<Dialog>
+        {
+            { x => x.ContentText, "Do you really want to delete this record? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true
+        };
+        var dialogReference = await DialogService.ShowAsync<Dialog>("Delete Confirmation", parameters, options);
+
+        var result = await dialogReference.Result;
+
+        if (!result!.Canceled)
+        {
+            await DeleteDepartment(department);
+        }
+    }
+
+
+
+}
+

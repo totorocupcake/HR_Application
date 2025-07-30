@@ -479,6 +479,61 @@ public class OracleDataService
     }
 
 
+    public async Task UpdateDepartmentAsync(int departmentId, string departmentName, int? managerID, int? locationID)
+    {
+        using var connection = new OracleConnection(_connectionString);
+
+        try
+        {
+            await connection.OpenAsync();
+
+            using var command = new OracleCommand("Jobs_update_sp", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Add parameters with proper null handling
+            command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int32)).Value = departmentId;
+            command.Parameters.Add(new OracleParameter("DEPARTMENT_NAME", OracleDbType.Varchar2)).Value = departmentName;
+            command.Parameters.Add(new OracleParameter("MANAGER_ID", OracleDbType.Int32)).Value = managerID ?? (object)DBNull.Value;
+            command.Parameters.Add(new OracleParameter("LOCATION_ID", OracleDbType.Int32)).Value = locationID ?? (object)DBNull.Value;
+
+            await command.ExecuteNonQueryAsync();
+        }
+        catch (OracleException ex)
+        {
+            // Log the specific Oracle error
+            Console.WriteLine($"Oracle Error {ex.Number}: {ex.Message}");
+            throw; // Re-throw to handle in calling code
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
+    }
+
+
+    public async Task<bool> DeleteDepartmentAsync(int departmentId)
+    {
+        using var connection = new OracleConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Use parameterized query to prevent SQL injection
+        const string query = "DELETE FROM hr_departments WHERE department_id = :department_id";
+
+        using var command = new OracleCommand(query, connection);
+        command.Parameters.Add(new OracleParameter("DEPARTMENT_ID", OracleDbType.Int32)).Value = departmentId;
+
+        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        // Return true if at least one row was deleted
+        return rowsAffected > 0;
+    }
+
+
+
+
 }
 
 
