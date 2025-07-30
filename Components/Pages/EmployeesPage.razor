@@ -36,7 +36,7 @@ else
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.HireDate)" Class="compact-sort-label">Hire Date</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.JobId)" Class="compact-sort-label">Job ID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.Salary!)" Class="compact-sort-label">Salary</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.CommissionPct!)" Class="compact-sort-label">Commission (%)</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.CommissionPct!)" Class="compact-sort-label">Commission</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.ManagerId!)" Class="compact-sort-label">Manager ID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel  SortBy="new Func<Employee, object>(x => x.DepartmentId!)" Class="compact-sort-label">Department ID</MudTableSortLabel></MudTh>
             <MudTh>Delete?</MudTh>
@@ -52,7 +52,7 @@ else
             <MudTd DataLabel="Hire Date">@context!.HireDate.ToString("d")</MudTd>
         <MudTd DataLabel="Job Id">@context!.JobId</MudTd>
         <MudTd DataLabel="Salary">@context!.Salary</MudTd>
-        <MudTd DataLabel="Commission Pct">@(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))</MudTd>
+        <MudTd DataLabel="Commission">@(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))</MudTd>
         <MudTd DataLabel="Manager Id">@context!.ManagerId</MudTd>
         <MudTd DataLabel="Department Id">@context!.DepartmentId</MudTd>
         <MudTd  DataLabel="Actions">
@@ -84,7 +84,7 @@ else
             <MudTd DataLabel="Salary">
                 <MudNumericField @bind-Value="context!.Salary" Min="0" Step="100" Variant="Variant.Text" Margin="Margin.None" />
             </MudTd>
-            <MudTd DataLabel="Commission Pct">
+            <MudTd DataLabel="Commission">
                 @(Math.Round((decimal)(context!.CommissionPct ?? 0), 2))
             </MudTd>
             <MudTd DataLabel="Manager Id">
