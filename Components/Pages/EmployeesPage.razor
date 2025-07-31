@@ -18,7 +18,7 @@ else
 {
 
     <MudTable @ref="tableRef" Class="employees-table" Items="@Employees" Dense="true" Hover="true" ReadOnly="false" CanCancelEdit="true" Striped="true"
-              @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true" Height="77vh" FooterClass="py-1"
+              @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit" FixedHeader="true" FixedFooter="true"  FooterClass="py-1"
               RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" filter="FilterFunc!" Loading=loading 
           RowEditCommit=@(async (emp) => await ItemHasBeenCommitted(emp)) IsEditRowSwitchingBlocked="false" ApplyButtonPosition="@applyButtonPosition" EditButtonPosition="@editButtonPosition" EditTrigger="@editTrigger">
     <ToolBarContent>
